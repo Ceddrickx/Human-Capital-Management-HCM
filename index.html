@@ -89,6 +89,15 @@
     body.light .choice-label:has(input[type="radio"]:checked) {
       background: rgba(37,99,235,0.08);
     }
+    body.light .section-jump-chip,
+    body.light .status-pill,
+    body.light .search-nav-btn,
+    body.light #filter-menu-btn {
+      background: #fff;
+    }
+    body.light .choice-label {
+      background: #fbfdff;
+    }
     h1, h2, h3, h4 { font-family: var(--font-heading); }
     a { color: var(--color-primary); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -291,6 +300,40 @@
       backdrop-filter: blur(14px);
     }
     body.light #filter-toolbar { background: rgba(255,255,255,0.92); }
+    .toolbar-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+    .filter-controls,
+    .search-controls,
+    .review-controls,
+    .status-controls {
+      min-height: 36px;
+    }
+    .search-controls {
+      flex: 1 1 420px;
+      max-width: 620px;
+    }
+    .status-controls { justify-content: flex-end; }
+    #filter-menu-btn {
+      display: none;
+      background: var(--color-choice-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      padding: 6px 10px;
+      min-height: 34px;
+      color: var(--color-text-primary);
+      font-size: 0.8rem;
+      font-weight: 800;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    #filter-menu-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    #filter-menu-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     .filter-label {
       font-size: 0.85rem;
       color: var(--color-text-secondary);
@@ -367,9 +410,8 @@
     .filter-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     .post-submit-only { display: none; }
     .question-search {
-      flex: 1 1 280px;
+      flex: 1 1 260px;
       min-width: 220px;
-      max-width: 420px;
       position: relative;
       display: flex;
       align-items: center;
@@ -415,6 +457,35 @@
     #question-search-clear:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     .question-search.has-query #question-search-clear { display: inline-flex; align-items: center; justify-content: center; }
     #search-count[hidden] { display: none; }
+    .search-nav-btn {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: var(--color-choice-bg);
+      color: var(--color-text-secondary);
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .search-nav-btn:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    .search-nav-btn:disabled {
+      opacity: 0.46;
+      cursor: default;
+      transform: none;
+    }
+    .search-nav-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .search-highlight {
+      background: rgba(245,166,35,0.28);
+      color: var(--color-text-primary);
+      border-radius: 4px;
+      padding: 0 2px;
+      box-shadow: 0 0 0 1px rgba(245,166,35,0.24);
+    }
     .toolbar-spacer { flex: 1 1 auto; }
     .status-pill {
       font-size: 0.82rem;
@@ -469,17 +540,21 @@
     }
     .section-jump-chip {
       display: inline-flex;
+      position: relative;
       align-items: center;
       justify-content: center;
+      gap: 6px;
       min-height: 30px;
-      padding: 5px 10px;
+      min-width: 86px;
+      padding: 6px 10px 8px;
       border: 1px solid var(--color-border);
-      border-radius: 999px;
+      border-radius: var(--radius-btn);
       background: var(--color-choice-bg);
       color: var(--color-text-secondary);
       font-size: 0.78rem;
       font-weight: 800;
       white-space: nowrap;
+      overflow: hidden;
       transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
     }
     .section-jump-chip:hover {
@@ -494,6 +569,26 @@
       box-shadow: 0 8px 20px rgba(79,131,204,0.22);
     }
     .section-jump-chip:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .section-tab-label { position: relative; z-index: 1; }
+    .section-progress-track {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 4px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(148,163,184,0.24);
+      overflow: hidden;
+    }
+    .section-progress-fill {
+      display: block;
+      width: var(--section-progress, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: currentColor;
+      opacity: 0.82;
+      transition: width 0.25s ease;
+    }
     #jump-submit-btn {
       background: var(--color-accent);
       border: none;
@@ -616,8 +711,8 @@
       background: var(--color-card);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-card);
-      padding: 22px 24px;
-      margin-bottom: 18px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
       box-shadow: var(--shadow);
       transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
       scroll-margin-top: 164px;
@@ -634,10 +729,10 @@
 
     .card-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .card-label {
       display: flex;
@@ -653,14 +748,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 28px;
-      padding: 4px 10px;
+      min-height: 24px;
+      padding: 3px 9px;
       border-radius: 999px;
       background: var(--color-primary);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.16);
       box-shadow: 0 6px 16px rgba(79,131,204,0.24);
-      font-size: 0.82rem;
+      font-size: 0.76rem;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
@@ -668,13 +763,13 @@
     .question-type-badge {
       display: inline-flex;
       align-items: center;
-      min-height: 24px;
-      padding: 3px 8px;
+      min-height: 22px;
+      padding: 3px 7px;
       border-radius: 999px;
       background: var(--color-choice-bg);
       color: var(--color-text-primary);
       border: 1px solid var(--color-border);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
@@ -687,8 +782,8 @@
       background: rgba(245,166,35,0.08);
       border: 1px solid rgba(245,166,35,0.32);
       border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 0.72rem;
+      padding: 2px 7px;
+      font-size: 0.68rem;
       font-weight: 600;
       line-height: 1.4;
       text-transform: none;
@@ -700,12 +795,17 @@
       gap: 8px;
     }
     .result-badge {
-      font-size: 1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-btn);
+      place-items: center;
+      border: 1px solid currentColor;
+      font-size: 0.86rem;
       display: none;
       font-weight: 700;
     }
-    .result-badge[data-result="correct"]   { display: inline; color: var(--color-success); }
-    .result-badge[data-result="incorrect"] { display: inline; color: var(--color-danger); }
+    .result-badge[data-result="correct"]   { display: grid; color: var(--color-success); background: rgba(22,163,74,0.08); }
+    .result-badge[data-result="incorrect"] { display: grid; color: var(--color-danger); background: rgba(220,38,38,0.08); }
 
     .flag-btn {
       background: transparent;
@@ -715,7 +815,7 @@
       font-size: 0.9rem;
       color: var(--color-text-secondary);
       transition: all 0.2s;
-      min-width: 40px; min-height: 40px;
+      min-width: 36px; min-height: 36px;
       display: flex; align-items: center; justify-content: center;
     }
     .flag-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
@@ -725,11 +825,11 @@
     .flag-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     .question-text {
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 600;
       color: var(--color-text-primary);
-      margin-bottom: 18px;
-      line-height: 1.65;
+      margin-bottom: 14px;
+      line-height: 1.58;
       overflow-wrap: break-word;
     }
 
@@ -741,20 +841,20 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
       min-width: 0;
     }
     .choice-label {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-btn);
-      padding: 11px 14px;
+      padding: 10px 12px;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      min-height: 48px;
-      font-size: 0.94rem;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+      min-height: 44px;
+      font-size: 0.92rem;
       background: var(--color-choice-bg);
     }
     .choice-label:hover { border-color: var(--color-primary); background: rgba(79,131,204,0.06); }
@@ -814,15 +914,15 @@
     }
     .question-card.submitted .choice-label.correct {
       border-color: var(--color-success);
-      color: var(--color-success);
-      background: rgba(22,163,74,0.16);
-      box-shadow: inset 0 0 0 1px rgba(22,163,74,0.32);
+      color: var(--color-text-primary);
+      background: rgba(22,163,74,0.08);
+      box-shadow: inset 5px 0 0 var(--color-success), inset 0 0 0 1px rgba(22,163,74,0.18);
     }
     .question-card.submitted .choice-label.incorrect {
       border-color: var(--color-danger);
-      color: var(--color-danger);
-      background: rgba(220,38,38,0.14);
-      box-shadow: inset 0 0 0 1px rgba(220,38,38,0.28);
+      color: var(--color-text-primary);
+      background: rgba(220,38,38,0.08);
+      box-shadow: inset 5px 0 0 var(--color-danger), inset 0 0 0 1px rgba(220,38,38,0.16);
     }
     .question-card.submitted .choice-label.correct .choice-letter {
       background: var(--color-success);
@@ -1219,18 +1319,30 @@
     }
     .mobile-bottom-btn {
       min-width: 0;
-      min-height: 42px;
+      min-height: 48px;
       display: inline-flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-btn);
       background: var(--color-choice-bg);
       color: var(--color-text-secondary);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 800;
       white-space: nowrap;
       transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .mobile-btn-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      line-height: 1;
+      color: currentColor;
     }
     .mobile-bottom-btn:hover {
       border-color: var(--color-primary);
@@ -1264,15 +1376,48 @@
         gap: 6px;
         align-items: center;
       }
-      .question-search {
+      #filter-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        order: 1;
+      }
+      .filter-controls {
+        display: none;
+        order: 5;
         flex: 1 0 100%;
-        order: 6;
+        padding: 8px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-btn);
+        background: rgba(15,23,42,0.14);
+      }
+      body.light .filter-controls { background: rgba(248,250,252,0.92); }
+      #filter-toolbar.filters-open .filter-controls {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .search-controls {
+        flex: 1 1 auto;
+        order: 2;
+        max-width: none;
+      }
+      .review-controls {
+        order: 4;
+      }
+      .status-controls {
+        order: 3;
+        margin-left: auto;
+      }
+      .question-search {
+        flex: 1 1 180px;
         max-width: none;
         min-width: 0;
       }
+      .search-nav-btn { display: none; }
       .filter-label { display: none; }
       .filter-btn,
       .review-summary-btn,
+      .review-retake-btn,
       #jump-submit-btn {
         min-height: 30px;
         padding: 5px 9px;
@@ -1292,8 +1437,9 @@
       }
       .section-jump-label { display: none; }
       .section-jump-chip {
-        min-height: 26px;
-        padding: 4px 8px;
+        min-height: 30px;
+        min-width: 74px;
+        padding: 5px 8px 8px;
         font-size: 0.7rem;
       }
       #mobile-badge,
@@ -1396,6 +1542,15 @@
       margin-bottom: 24px;
       box-shadow: var(--shadow-strong);
       scroll-margin-top: 164px;
+      position: relative;
+      overflow: hidden;
+    }
+    #summary-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-success));
     }
     #summary-panel.summary-enter { animation: summaryEnter 0.38s ease both; }
     .summary-hero {
@@ -1492,7 +1647,7 @@
     }
     .summary-stats {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(150px, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
@@ -1501,6 +1656,9 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-btn);
       padding: 12px;
+      min-height: 82px;
+      display: grid;
+      align-content: center;
     }
     .summary-stat-label { font-size: 0.78rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
     .summary-stat-value { font-size: 1.05rem; font-weight: 600; color: var(--color-text-primary); margin-top: 2px; }
@@ -1972,25 +2130,36 @@
 
   <!-- FILTER TOOLBAR -->
   <div id="filter-toolbar" role="toolbar" aria-label="Question filters">
-    <span class="filter-label">Show:</span>
-    <button class="filter-btn" data-filter="all" aria-pressed="true">All</button>
-    <button class="filter-btn" data-filter="flagged" aria-pressed="false">🚩 Flagged</button>
-    <button class="filter-btn" data-filter="unanswered" aria-pressed="false">Unanswered</button>
-    <button class="filter-btn post-submit-only" data-filter="correct" aria-pressed="false">✅ Correct</button>
-    <button class="filter-btn post-submit-only" data-filter="incorrect" aria-pressed="false">❌ Incorrect</button>
-    <button class="filter-btn post-submit-only" data-filter="skipped" aria-pressed="false">Skipped</button>
-    <button class="review-summary-btn post-submit-only" id="review-summary-btn">Back to Summary</button>
-    <button class="review-retake-btn post-submit-only" id="review-retake-btn">↺ Retake Exam</button>
-    <label class="question-search" for="question-search-input">
-      <span class="sr-only">Search questions</span>
-      <input id="question-search-input" type="search" placeholder="Search questions..." autocomplete="off">
-      <button id="question-search-clear" type="button" aria-label="Clear question search">x</button>
-    </label>
-    <span id="search-count" class="status-pill" hidden aria-live="polite"></span>
+    <button id="filter-menu-btn" type="button" aria-expanded="false" aria-controls="filter-controls">Filters</button>
+    <div class="toolbar-group filter-controls" id="filter-controls">
+      <span class="filter-label">Show</span>
+      <button class="filter-btn" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter-btn" data-filter="flagged" aria-pressed="false">Flagged</button>
+      <button class="filter-btn" data-filter="unanswered" aria-pressed="false">Unanswered</button>
+      <button class="filter-btn post-submit-only" data-filter="correct" aria-pressed="false">Correct</button>
+      <button class="filter-btn post-submit-only" data-filter="incorrect" aria-pressed="false">Incorrect</button>
+      <button class="filter-btn post-submit-only" data-filter="skipped" aria-pressed="false">Skipped</button>
+    </div>
+    <div class="toolbar-group search-controls">
+      <label class="question-search" for="question-search-input">
+        <span class="sr-only">Search questions</span>
+        <input id="question-search-input" type="search" placeholder="Search questions..." autocomplete="off">
+        <button id="question-search-clear" type="button" aria-label="Clear question search">x</button>
+      </label>
+      <button class="search-nav-btn" id="search-prev-btn" type="button" aria-label="Previous search match">Prev</button>
+      <button class="search-nav-btn" id="search-next-btn" type="button" aria-label="Next search match">Next</button>
+      <span id="search-count" class="status-pill" hidden aria-live="polite"></span>
+    </div>
+    <div class="toolbar-group review-controls">
+      <button class="review-summary-btn post-submit-only" id="review-summary-btn">Summary</button>
+      <button class="review-retake-btn post-submit-only" id="review-retake-btn">Retake</button>
+    </div>
     <span class="toolbar-spacer"></span>
-    <span id="answered-count" class="status-pill" aria-live="polite">Answered: 0 / 0</span>
-    <span id="flagged-count" class="status-pill" aria-live="polite">Flagged: 0</span>
-    <button id="jump-submit-btn" aria-label="Submit exam">Submit Exam</button>
+    <div class="toolbar-group status-controls">
+      <span id="answered-count" class="status-pill" aria-live="polite">Answered: 0 / 0</span>
+      <span id="flagged-count" class="status-pill" aria-live="polite">Flagged: 0</span>
+      <button id="jump-submit-btn" aria-label="Submit exam">Submit</button>
+    </div>
     <div class="section-jump-row" aria-label="Section shortcuts">
       <span class="section-jump-label">Sections</span>
       <div id="top-section-chips" class="section-jump-chips"></div>
@@ -2030,26 +2199,26 @@
     <aside id="navigator" aria-label="Question navigator">
       <div class="nav-header-label">Question Navigator</div>
       <div class="section-pills" id="nav-pills-desktop"></div>
-      <button id="jump-unanswered-btn" aria-label="Jump to first unanswered question">⬇ First Unanswered</button>
-      <button id="reset-flags-btn" aria-label="Reset all flags">🏳 Reset Flags</button>
+      <button id="jump-unanswered-btn" aria-label="Jump to first unanswered question">First Unanswered</button>
+      <button id="reset-flags-btn" aria-label="Reset all flags">Reset Flags</button>
       <span id="nav-answered-count">0 / 0 answered</span>
       <div class="nav-grid" id="nav-grid-desktop"></div>
     </aside>
   </div>
 
   <!-- DRAWER TOGGLE (tablet/mobile) -->
-  <button id="drawer-toggle" aria-label="Open question navigator" aria-expanded="false">☰</button>
+  <button id="drawer-toggle" aria-label="Open question navigator" aria-expanded="false">Nav</button>
 
   <!-- MOBILE BADGE -->
   <button id="mobile-badge" aria-label="Open question navigator">Q 0 / 0</button>
 
   <!-- MOBILE BOTTOM NAV -->
   <nav id="mobile-bottom-nav" aria-label="Mobile exam actions">
-    <button class="mobile-bottom-btn" id="mobile-nav-search" type="button">Find</button>
-    <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button">Prev</button>
-    <button class="mobile-bottom-btn" id="mobile-nav-next" type="button">Next</button>
-    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button">Nav</button>
-    <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button">Submit</button>
+    <button class="mobile-bottom-btn" id="mobile-nav-search" type="button"><span class="mobile-btn-icon">?</span><span>Find</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button"><span class="mobile-btn-icon">&lt;</span><span>Prev</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-next" type="button"><span class="mobile-btn-icon">&gt;</span><span>Next</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button"><span class="mobile-btn-icon">#</span><span>Nav</span></button>
+    <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button"><span class="mobile-btn-icon">!</span><span>Submit</span></button>
   </nav>
 
   <!-- DRAWER BACKDROP -->
@@ -2057,12 +2226,12 @@
 
   <!-- DRAWER -->
   <div id="drawer" role="dialog" aria-label="Question navigator drawer" aria-modal="true" tabindex="-1">
-    <button id="drawer-close-btn" aria-label="Close navigator">✕</button>
+    <button id="drawer-close-btn" aria-label="Close navigator">x</button>
     <div class="drawer-nav-content">
       <div class="nav-header-label">Question Navigator</div>
       <div class="section-pills" id="nav-pills-drawer"></div>
-      <button id="jump-unanswered-btn-drawer" aria-label="Jump to first unanswered question">⬇ First Unanswered</button>
-      <button id="reset-flags-btn-drawer" aria-label="Reset all flags">🏳 Reset Flags</button>
+      <button id="jump-unanswered-btn-drawer" aria-label="Jump to first unanswered question">First Unanswered</button>
+      <button id="reset-flags-btn-drawer" aria-label="Reset all flags">Reset Flags</button>
       <span id="nav-answered-count-drawer" style="display:block; font-size:0.78rem; color:var(--color-text-secondary); margin-bottom:10px;">0 / 0 answered</span>
       <div class="nav-grid" id="nav-grid-drawer"></div>
     </div>
@@ -3289,6 +3458,7 @@
     let toastActive    = false;
     let activeFilter   = 'all';
     let activeSearchTerm = '';
+    let activeSearchIndex = 0;
     let preparedQuestionBank = null;
     let questionDiagnostics = [];
 
@@ -4041,20 +4211,63 @@
       return tokens.every(token => corpus.includes(token));
     }
 
+    function escapeRegExp(value) {
+      return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function getSearchTokens() {
+      return String(activeSearchTerm || '')
+        .trim()
+        .split(/\s+/)
+        .map(token => token.trim())
+        .filter(Boolean)
+        .sort((a, b) => b.length - a.length);
+    }
+
+    function highlightSearchText(value) {
+      const text = String(value ?? '');
+      const tokens = getSearchTokens();
+      if (tokens.length === 0) return escapeHTML(text);
+      const regex = new RegExp(`(${tokens.map(escapeRegExp).join('|')})`, 'gi');
+      return escapeHTML(text).replace(regex, '<mark class="search-highlight">$1</mark>');
+    }
+
+    function highlightSearchMatches() {
+      document.querySelectorAll('.question-card').forEach(card => {
+        const q = examState.questions.find(item => String(item.id) === String(card.dataset.questionId));
+        const questionText = card.querySelector('.question-text');
+        if (!q || !questionText) return;
+        if (!activeSearchTerm) {
+          questionText.textContent = q.question;
+          return;
+        }
+        questionText.innerHTML = highlightSearchText(q.question);
+      });
+    }
+
     function updateSearchUI(visibleCount) {
       const wrapper = document.querySelector('.question-search');
       const input = document.getElementById('question-search-input');
       const count = document.getElementById('search-count');
+      const prevBtn = document.getElementById('search-prev-btn');
+      const nextBtn = document.getElementById('search-next-btn');
+      const hasSearch = !!activeSearchTerm;
       if (wrapper) wrapper.classList.toggle('has-query', !!activeSearchTerm);
       if (input && input.value !== activeSearchTerm) input.value = activeSearchTerm;
-      if (!count) return;
-      if (!activeSearchTerm) {
-        count.hidden = true;
-        count.textContent = '';
-        return;
+      if (visibleCount <= 0) activeSearchIndex = 0;
+      else activeSearchIndex = Math.min(activeSearchIndex, visibleCount - 1);
+      if (prevBtn) prevBtn.disabled = !hasSearch || visibleCount === 0;
+      if (nextBtn) nextBtn.disabled = !hasSearch || visibleCount === 0;
+      if (count) {
+        if (!activeSearchTerm) {
+          count.hidden = true;
+          count.textContent = '';
+        } else {
+          count.hidden = false;
+          count.textContent = `${visibleCount} match${visibleCount === 1 ? '' : 'es'}`;
+        }
       }
-      count.hidden = false;
-      count.textContent = `${visibleCount} match${visibleCount === 1 ? '' : 'es'}`;
+      highlightSearchMatches();
     }
 
     function updateSectionPillProgress() {
@@ -4066,7 +4279,13 @@
         const value = examState.submitted
           ? qs.filter(isQuestionFullyCorrect).length
           : qs.filter(isQuestionAnswered).length;
-        pill.textContent = `${ABBRS[type] || type} ${value}/${total}`;
+        const label = `${ABBRS[type] || type} ${value}/${total}`;
+        const pct = total > 0 ? (value / total) * 100 : 0;
+        if (pill.classList.contains('section-jump-chip')) {
+          pill.innerHTML = `<span class="section-tab-label">${escapeHTML(label)}</span><span class="section-progress-track" aria-hidden="true"><span class="section-progress-fill" style="--section-progress:${pct}%;"></span></span>`;
+        } else {
+          pill.textContent = label;
+        }
         pill.title = examState.submitted ? `${type}: ${value}/${total} correct` : `${type}: ${value}/${total} answered`;
       });
       document.querySelectorAll('.nav-section-group').forEach(group => {
@@ -4112,11 +4331,11 @@
           if (!btn) return;
           if (firstUnans) {
             btn.disabled = false;
-            btn.textContent = '⬇ First Unanswered';
+            btn.textContent = 'First Unanswered';
             btn._targetId = firstUnans.id;
           } else {
             btn.disabled = true;
-            btn.textContent = 'All answered ✅';
+            btn.textContent = 'All answered';
             btn._targetId = null;
           }
         });
@@ -4150,7 +4369,7 @@
             flagIcon.className = 'nav-cell-flag';
             cell.appendChild(flagIcon);
           }
-          flagIcon.textContent = isFlagged ? '🚩' : '';
+          flagIcon.textContent = isFlagged ? 'F' : '';
         });
       });
       updateSectionPillProgress();
@@ -4461,9 +4680,9 @@
       document.getElementById('exam-header-title').textContent   = `${EXAM_CONFIG.subjectName} — ${EXAM_CONFIG.subjectCode}`;
       document.getElementById('exam-header-topic').textContent   = `Topic: ${EXAM_CONFIG.topic}`;
       document.getElementById('exam-header-school').textContent  = EXAM_CONFIG.school;
-      document.getElementById('exam-meta-time').textContent      = `⏱ ${Math.round(EXAM_CONFIG.timerSeconds / 60)} minutes`;
-      document.getElementById('exam-meta-questions').textContent = `📋 ${examState.questions.length} questions`;
-      document.getElementById('exam-meta-passing').textContent   = `✅ Passing: ${Math.round(EXAM_CONFIG.passingPercent * 100)}% (${passingPts} / ${totalPts} pts)`;
+      document.getElementById('exam-meta-time').textContent      = `${Math.round(EXAM_CONFIG.timerSeconds / 60)} minutes`;
+      document.getElementById('exam-meta-questions').textContent = `${examState.questions.length} questions`;
+      document.getElementById('exam-meta-passing').textContent   = `Passing: ${Math.round(EXAM_CONFIG.passingPercent * 100)}% (${passingPts} / ${totalPts} pts)`;
     }
 
     /* =====================================================
@@ -4614,7 +4833,7 @@
           flagBtn.setAttribute('data-question-id', q.id);
           flagBtn.setAttribute('aria-label', `Flag question ${num}`);
           flagBtn.setAttribute('aria-pressed', 'false');
-          flagBtn.textContent = '🚩';
+          flagBtn.textContent = 'F';
           flagBtn.addEventListener('click', () => toggleFlag(q.id));
           headerRight.appendChild(badge);
           headerRight.appendChild(flagBtn);
@@ -4934,7 +5153,7 @@
           earnedPts += score;
           const correct = score === possible;
           badge.setAttribute('data-result', correct ? 'correct' : 'incorrect');
-          badge.textContent = correct ? '✅' : '❌';
+          badge.textContent = correct ? 'OK' : 'X';
           badge.style.display = '';
           card.classList.add(correct ? 'correct-card' : 'incorrect-card');
           if (!breakdown['Enumeration']) breakdown['Enumeration'] = { earned: 0, total: 0 };
@@ -4949,7 +5168,7 @@
             const userRaw = userVals[i] || '';
             const isItemCorrect = !!matches[i];
             html += `<div class="enum-result-row">
-              <span>${isItemCorrect ? '✅' : '❌'}</span>
+              <span>${isItemCorrect ? 'OK' : 'X'}</span>
               <span class="enum-result-label">Item ${i+1}:</span>
               <span>${userRaw ? escapeHTML(userRaw) : '<em class="answer-no-answer">No answer</em>'}</span>
             </div>`;
@@ -4970,7 +5189,7 @@
           totalPts += 1;
           if (correct) earnedPts += 1;
           badge.setAttribute('data-result', correct ? 'correct' : 'incorrect');
-          badge.textContent = correct ? '✅' : '❌';
+          badge.textContent = correct ? 'OK' : 'X';
           badge.style.display = '';
           card.classList.add(correct ? 'correct-card' : 'incorrect-card');
           if (!breakdown[q.type]) breakdown[q.type] = { earned: 0, total: 0 };
@@ -4995,14 +5214,14 @@
                 lbl.classList.add('correct');
                 const mark = lbl.querySelector('.choice-mark');
                 const span = lbl.querySelector('.choice-text');
-                if (mark) mark.textContent = '✅';
-                else if (span && !span.dataset.marked) { span.dataset.marked = '1'; span.textContent = '✅ ' + choiceVal; }
+                if (mark) mark.textContent = 'OK';
+                else if (span && !span.dataset.marked) { span.dataset.marked = '1'; span.textContent = 'OK ' + choiceVal; }
               } else if (isUserChoice && !correct) {
                 lbl.classList.add('incorrect');
                 const mark = lbl.querySelector('.choice-mark');
                 const span = lbl.querySelector('.choice-text');
-                if (mark) mark.textContent = '❌';
-                else if (span && !span.dataset.marked) { span.dataset.marked = '1'; span.textContent = '❌ ' + choiceVal; }
+                if (mark) mark.textContent = 'X';
+                else if (span && !span.dataset.marked) { span.dataset.marked = '1'; span.textContent = 'X ' + choiceVal; }
               }
             });
             let html = '';
@@ -5206,8 +5425,8 @@
             </div>
           </div>
           <div>
-            <h2>📊 Exam Results</h2>
-            <p class="summary-result ${passed ? 'passed' : 'failed'}">${passed ? '✅ PASSED' : '❌ FAILED'}</p>
+            <h2>Exam Results</h2>
+            <p class="summary-result ${passed ? 'passed' : 'failed'}">${passed ? 'PASSED' : 'FAILED'}</p>
             <div class="score-bar-wrap">
               <div class="score-bar-label">
                 <span>Score progress</span>
@@ -5235,7 +5454,7 @@
           </div>
           <div class="summary-stat-item">
             <div class="summary-stat-label">Longest Streak</div>
-            <div class="summary-stat-value">🔥 ${examState.longestStreak}</div>
+            <div class="summary-stat-value">${examState.longestStreak}</div>
           </div>
           <div class="summary-stat-item">
             <div class="summary-stat-label">Answered / Skipped</div>
@@ -5252,8 +5471,8 @@
         </div>
         ${renderScoreHistoryHTML()}
         <div class="summary-actions">
-          <button class="retake-btn" id="retake-btn-summary">↺ Retake Exam</button>
-          <button class="back-to-top-summary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to Top</button>
+          <button class="retake-btn" id="retake-btn-summary">Retake Exam</button>
+          <button class="back-to-top-summary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
         </div>
       `;
 
@@ -5515,6 +5734,17 @@
       requestAnimationFrame(() => searchInput.focus());
     }
 
+    function jumpSearchMatch(direction) {
+      if (!activeSearchTerm) {
+        focusQuestionSearch();
+        return;
+      }
+      const matches = getVisibleQuestionCards();
+      if (matches.length === 0) return;
+      activeSearchIndex = (activeSearchIndex + direction + matches.length) % matches.length;
+      smoothScrollToCard(matches[activeSearchIndex]);
+    }
+
     function handleMobileSubmitAction() {
       if (examState.submitted) {
         document.getElementById('summary-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5529,7 +5759,9 @@
       const nextBtn = document.getElementById('mobile-nav-next');
       const hasVisibleCards = getVisibleQuestionCards().length > 0;
       if (submitBtn) {
-        submitBtn.textContent = examState.submitted ? 'Summary' : 'Submit';
+        submitBtn.innerHTML = examState.submitted
+          ? '<span class="mobile-btn-icon">=</span><span>Summary</span>'
+          : '<span class="mobile-btn-icon">!</span><span>Submit</span>';
         submitBtn.setAttribute('aria-label', examState.submitted ? 'Back to summary' : 'Submit exam');
       }
       [prevBtn, nextBtn].forEach(btn => {
@@ -5636,20 +5868,37 @@
 
       const searchInput = document.getElementById('question-search-input');
       const searchClear = document.getElementById('question-search-clear');
+      const filterMenuBtn = document.getElementById('filter-menu-btn');
+      filterMenuBtn.addEventListener('click', () => {
+        const toolbar = document.getElementById('filter-toolbar');
+        const willOpen = !toolbar.classList.contains('filters-open');
+        toolbar.classList.toggle('filters-open', willOpen);
+        filterMenuBtn.setAttribute('aria-expanded', String(willOpen));
+      });
       searchInput.addEventListener('input', () => {
         activeSearchTerm = searchInput.value.trim();
+        activeSearchIndex = 0;
         applyFilter(activeFilter, { scrollToFirst: false });
       });
       searchClear.addEventListener('click', () => {
         activeSearchTerm = '';
+        activeSearchIndex = 0;
         searchInput.value = '';
         applyFilter(activeFilter, { scrollToFirst: false });
         searchInput.focus();
       });
+      document.getElementById('search-prev-btn').addEventListener('click', () => jumpSearchMatch(-1));
+      document.getElementById('search-next-btn').addEventListener('click', () => jumpSearchMatch(1));
 
       // Filter buttons
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => applyFilter(btn.dataset.filter, { scrollToFirst: true }));
+        btn.addEventListener('click', () => {
+          applyFilter(btn.dataset.filter, { scrollToFirst: true });
+          if (window.innerWidth <= 767) {
+            document.getElementById('filter-toolbar').classList.remove('filters-open');
+            document.getElementById('filter-menu-btn').setAttribute('aria-expanded', 'false');
+          }
+        });
       });
 
       document.addEventListener('keydown', handleKeyboardShortcuts);
