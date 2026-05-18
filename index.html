@@ -366,6 +366,55 @@
     }
     .filter-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     .post-submit-only { display: none; }
+    .question-search {
+      flex: 1 1 280px;
+      min-width: 220px;
+      max-width: 420px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    #question-search-input {
+      width: 100%;
+      min-height: 34px;
+      padding: 7px 38px 7px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: var(--color-choice-bg);
+      color: var(--color-text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    #question-search-input::placeholder { color: var(--color-text-secondary); font-weight: 500; }
+    #question-search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(79,131,204,0.18);
+    }
+    #question-search-clear {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      width: 28px;
+      height: 28px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-size: 0.86rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    #question-search-clear:hover {
+      background: var(--color-border);
+      color: var(--color-text-primary);
+    }
+    #question-search-clear:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .question-search.has-query #question-search-clear { display: inline-flex; align-items: center; justify-content: center; }
+    #search-count[hidden] { display: none; }
     .toolbar-spacer { flex: 1 1 auto; }
     .status-pill {
       font-size: 0.82rem;
@@ -1154,14 +1203,72 @@
       cursor: pointer;
     }
 
+    #mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 260;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      background: var(--color-card);
+      border-top: 1px solid var(--color-border);
+      box-shadow: 0 -12px 28px rgba(0,0,0,0.22);
+    }
+    .mobile-bottom-btn {
+      min-width: 0;
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: var(--color-choice-bg);
+      color: var(--color-text-secondary);
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .mobile-bottom-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    .mobile-bottom-btn.primary {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #0f172a;
+    }
+    .mobile-bottom-btn.primary:hover {
+      background: var(--color-accent-hover);
+      border-color: var(--color-accent-hover);
+      color: #0f172a;
+    }
+    .mobile-bottom-btn:disabled {
+      opacity: 0.48;
+      cursor: default;
+      transform: none;
+    }
+    .mobile-bottom-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
     @media (max-width: 1023px) {
       #drawer-toggle { display: flex; align-items: center; justify-content: center; }
     }
     @media (max-width: 767px) {
+      body { padding-bottom: 70px; }
       #filter-toolbar {
         padding: 8px 10px;
         gap: 6px;
         align-items: center;
+      }
+      .question-search {
+        flex: 1 0 100%;
+        order: 6;
+        max-width: none;
+        min-width: 0;
       }
       .filter-label { display: none; }
       .filter-btn,
@@ -1189,8 +1296,10 @@
         padding: 4px 8px;
         font-size: 0.7rem;
       }
-      #mobile-badge { display: block; }
-      #main-layout { padding: 12px; }
+      #mobile-badge,
+      #drawer-toggle { display: none; }
+      #mobile-bottom-nav { display: grid; }
+      #main-layout { padding: 12px 12px 24px; }
       .question-card { padding: 14px; }
       .card-header {
         gap: 8px;
@@ -1436,6 +1545,71 @@
       white-space: nowrap;
     }
     .breakdown-row:last-child { border-bottom: none; }
+    .score-history {
+      margin-top: 16px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 16px;
+    }
+    .score-history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .score-history h3 {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .score-history-summary {
+      color: var(--color-text-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .score-history-list {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      overflow: hidden;
+      background: var(--color-choice-bg);
+    }
+    .score-history-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr 0.9fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 0.86rem;
+    }
+    .score-history-row:last-child { border-bottom: none; }
+    .score-history-row.is-latest {
+      box-shadow: inset 4px 0 0 var(--color-primary);
+      background: rgba(79,131,204,0.08);
+    }
+    .history-date { color: var(--color-text-primary); font-weight: 800; }
+    .history-score { color: var(--color-text-primary); font-weight: 800; }
+    .history-pct.passed { color: var(--color-success); font-weight: 800; }
+    .history-pct.failed { color: var(--color-danger); font-weight: 800; }
+    .history-time { color: var(--color-text-secondary); font-size: 0.8rem; }
+    .history-empty { color: var(--color-text-secondary); padding: 12px; font-size: 0.86rem; }
+    .clear-history-btn {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .clear-history-btn:hover {
+      border-color: var(--color-danger);
+      color: var(--color-danger);
+      background: rgba(220,38,38,0.08);
+    }
+    .clear-history-btn:focus-visible { outline: 2px solid var(--color-danger); outline-offset: 2px; }
     .summary-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1483,6 +1657,12 @@
         grid-column: 1 / -1;
         order: 3;
       }
+      .score-history-header { align-items: flex-start; flex-direction: column; }
+      .score-history-row {
+        grid-template-columns: 1fr auto;
+        gap: 6px 10px;
+      }
+      .history-time { grid-column: 1 / -1; }
       .summary-actions { justify-content: flex-start; }
     }
 
@@ -1690,6 +1870,9 @@
         bottom: 24px;
       }
     }
+    @media (max-width: 767px) {
+      #floating-back-top { bottom: 86px; }
+    }
 
     /* =====================================================
        TOAST
@@ -1721,6 +1904,13 @@
       white-space: nowrap;
     }
     .toast.toast-visible { opacity: 1; }
+    @media (max-width: 767px) {
+      #toast-container { bottom: 86px; }
+      .toast {
+        max-width: calc(100vw - 24px);
+        white-space: normal;
+      }
+    }
 
     /* =====================================================
        FOOTER
@@ -1791,6 +1981,12 @@
     <button class="filter-btn post-submit-only" data-filter="skipped" aria-pressed="false">Skipped</button>
     <button class="review-summary-btn post-submit-only" id="review-summary-btn">Back to Summary</button>
     <button class="review-retake-btn post-submit-only" id="review-retake-btn">↺ Retake Exam</button>
+    <label class="question-search" for="question-search-input">
+      <span class="sr-only">Search questions</span>
+      <input id="question-search-input" type="search" placeholder="Search questions..." autocomplete="off">
+      <button id="question-search-clear" type="button" aria-label="Clear question search">x</button>
+    </label>
+    <span id="search-count" class="status-pill" hidden aria-live="polite"></span>
     <span class="toolbar-spacer"></span>
     <span id="answered-count" class="status-pill" aria-live="polite">Answered: 0 / 0</span>
     <span id="flagged-count" class="status-pill" aria-live="polite">Flagged: 0</span>
@@ -1846,6 +2042,15 @@
 
   <!-- MOBILE BADGE -->
   <button id="mobile-badge" aria-label="Open question navigator">Q 0 / 0</button>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav id="mobile-bottom-nav" aria-label="Mobile exam actions">
+    <button class="mobile-bottom-btn" id="mobile-nav-search" type="button">Find</button>
+    <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button">Prev</button>
+    <button class="mobile-bottom-btn" id="mobile-nav-next" type="button">Next</button>
+    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button">Nav</button>
+    <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button">Submit</button>
+  </nav>
 
   <!-- DRAWER BACKDROP -->
   <div id="drawer-backdrop" role="presentation"></div>
@@ -1936,9 +2141,13 @@
     /* =====================================================
        2. DERIVED CONSTANTS
     ===================================================== */
-    const DERIVED_KEY = EXAM_CONFIG.subjectCode
+    const STORAGE_PREFIX = EXAM_CONFIG.subjectCode
       .replace(/[^a-zA-Z0-9]/g, '')
-      .toLowerCase() + '_v2_examState';
+      .toLowerCase();
+
+    const DERIVED_KEY = STORAGE_PREFIX + '_v2_examState';
+    const HISTORY_KEY = STORAGE_PREFIX + '_v2_scoreHistory';
+    const THEME_KEY = STORAGE_PREFIX + '_v2_theme';
 
     const TOTAL_TIME = EXAM_CONFIG.timerSeconds;
 
@@ -3079,6 +3288,7 @@
     let toastQueue     = [];
     let toastActive    = false;
     let activeFilter   = 'all';
+    let activeSearchTerm = '';
     let preparedQuestionBank = null;
     let questionDiagnostics = [];
 
@@ -3601,6 +3811,111 @@
       } catch (e) {}
     }
 
+    function getPreferredTheme() {
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+      } catch (e) {}
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light';
+      }
+      return 'dark';
+    }
+
+    function applyTheme(theme, shouldPersist = false) {
+      const normalizedTheme = theme === 'light' ? 'light' : 'dark';
+      document.body.classList.toggle('light', normalizedTheme === 'light');
+      document.body.classList.toggle('dark', normalizedTheme === 'dark');
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        const nextTheme = normalizedTheme === 'light' ? 'dark' : 'light';
+        themeBtn.textContent = nextTheme === 'light' ? 'Light' : 'Dark';
+        themeBtn.setAttribute('aria-label', `Switch to ${nextTheme} mode`);
+      }
+      if (shouldPersist) {
+        try { localStorage.setItem(THEME_KEY, normalizedTheme); } catch (e) {}
+      }
+    }
+
+    function getScoreHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveScoreHistory(history) {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 20)));
+      } catch (e) {}
+    }
+
+    function clearScoreHistory() {
+      try { localStorage.removeItem(HISTORY_KEY); } catch (e) {}
+    }
+
+    function formatDuration(totalSeconds) {
+      const seconds = Math.max(0, Number(totalSeconds) || 0);
+      const minutes = Math.floor(seconds / 60);
+      const remSeconds = seconds % 60;
+      return `${minutes}m ${remSeconds}s`;
+    }
+
+    function formatAttemptDate(timestamp) {
+      const date = new Date(timestamp);
+      if (Number.isNaN(date.getTime())) return 'Unknown date';
+      return date.toLocaleString([], {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function getAnsweredCount() {
+      return examState.questions.filter(isQuestionAnswered).length;
+    }
+
+    function buildScoreHistoryEntry(autoSubmit) {
+      const total = examState._totalPts || 0;
+      const earned = examState._earnedPts || 0;
+      const pct = total > 0 ? Number(((earned / total) * 100).toFixed(1)) : 0;
+      const passing = examState._passingPts || Math.ceil(total * EXAM_CONFIG.passingPercent);
+      const answered = getAnsweredCount();
+      const timestamp = Date.now();
+      return {
+        id: examState._historyId || `${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
+        timestamp,
+        subjectCode: EXAM_CONFIG.subjectCode,
+        topic: EXAM_CONFIG.topic,
+        earned,
+        total,
+        pct,
+        passed: total > 0 && earned >= passing,
+        passing,
+        answered,
+        skipped: Math.max(0, examState.questions.length - answered),
+        timeSpentSec: examState._timeSpent || 0,
+        autoSubmit: !!autoSubmit,
+        breakdown: examState._breakdown || {},
+        bankFingerprint: computeFingerprint()
+      };
+    }
+
+    function recordScoreHistory(autoSubmit) {
+      if (examState._historyRecorded) return;
+      const entry = buildScoreHistoryEntry(autoSubmit);
+      const history = [entry, ...getScoreHistory()]
+        .filter((item, index, list) => list.findIndex(other => other.id === item.id) === index)
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      saveScoreHistory(history);
+      examState._historyRecorded = true;
+      examState._historyId = entry.id;
+    }
+
     /* =====================================================
        9. UI HELPERS
     ===================================================== */
@@ -3630,7 +3945,7 @@
 
     function setExamControlsVisible(visible) {
       const display = visible ? '' : 'none';
-      ['filter-toolbar', 'navigator', 'drawer-toggle', 'mobile-badge'].forEach(id => {
+      ['filter-toolbar', 'navigator', 'drawer-toggle', 'mobile-badge', 'mobile-bottom-nav'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = display;
       });
@@ -3701,6 +4016,47 @@
       });
     }
 
+    function getQuestionSearchCorpus(q) {
+      const parts = [q.type, q.question, q.slideRef || ''];
+      if (isChoiceBasedQuestion(q)) {
+        const visibleChoices = Array.isArray(q.shuffledChoices) && q.shuffledChoices.length > 0
+          ? q.shuffledChoices
+          : q.origChoices;
+        parts.push(...(visibleChoices || []));
+      }
+      if (q.type === 'True or False') parts.push('true false');
+      if (examState.submitted) {
+        parts.push(q.correctAnswer || '');
+        parts.push(...(Array.isArray(q.altAnswers) ? q.altAnswers : []));
+        parts.push(...(Array.isArray(q.origWhy) ? q.origWhy : []));
+      }
+      return normalizeFlexibleText(parts.join(' '));
+    }
+
+    function questionMatchesSearch(q) {
+      const term = normalizeFlexibleText(activeSearchTerm);
+      if (!term) return true;
+      const tokens = term.split(' ').filter(Boolean);
+      const corpus = getQuestionSearchCorpus(q);
+      return tokens.every(token => corpus.includes(token));
+    }
+
+    function updateSearchUI(visibleCount) {
+      const wrapper = document.querySelector('.question-search');
+      const input = document.getElementById('question-search-input');
+      const count = document.getElementById('search-count');
+      if (wrapper) wrapper.classList.toggle('has-query', !!activeSearchTerm);
+      if (input && input.value !== activeSearchTerm) input.value = activeSearchTerm;
+      if (!count) return;
+      if (!activeSearchTerm) {
+        count.hidden = true;
+        count.textContent = '';
+        return;
+      }
+      count.hidden = false;
+      count.textContent = `${visibleCount} match${visibleCount === 1 ? '' : 'es'}`;
+    }
+
     function updateSectionPillProgress() {
       const ABBRS = { "Multiple Choice":"MC","True or False":"T/F","Enumeration":"Enum","Situational":"Sit","Acronym Meaning":"Acr" };
       document.querySelectorAll('.section-pill, .section-jump-chip').forEach(pill => {
@@ -3765,6 +4121,7 @@
           }
         });
       updateSectionPillProgress();
+      updateMobileBottomNav();
     }
 
     function updateNavigator() {
@@ -4115,6 +4472,9 @@
     function initExam() {
       const preparedBank = prepareQuestionBank();
       setExamControlsVisible(true);
+      activeFilter = 'all';
+      activeSearchTerm = '';
+      updateSearchUI(0);
 
       examState.answers       = {};
       examState.flagged       = {};
@@ -4123,6 +4483,12 @@
       examState.remainingTime = EXAM_CONFIG.timerSeconds;
       examState.currentStreak = 0;
       examState.longestStreak = 0;
+      examState._earnedPts = 0;
+      examState._totalPts = 0;
+      examState._breakdown = {};
+      examState._timeSpent = 0;
+      delete examState._historyRecorded;
+      delete examState._historyId;
 
       if (preparedBank.length === 0) {
         const loading = document.getElementById('loading-indicator');
@@ -4321,6 +4687,7 @@
         const card = document.getElementById(`card-${q.id}`);
         if (card) observer.observe(card);
       });
+      updateMobileBottomNav();
     }
 
     function buildAnswerInput(q, num) {
@@ -4482,6 +4849,7 @@
     }
 
     function submitExam(autoSubmit) {
+      if (examState.submitted) return;
       clearInterval(timerInterval);
       examState.submitted = true;
       const timeSpentSec = EXAM_CONFIG.timerSeconds - (examState.remainingTime || 0);
@@ -4523,8 +4891,10 @@
       examState.longestStreak = longest;
 
       renderResults();
+      recordScoreHistory(autoSubmit);
       renderSummaryPanel();
       updateNavigator();
+      updateMobileBottomNav();
       saveState();
 
       // Always show back-to-top after submit
@@ -4739,6 +5109,44 @@
       </div>`;
     }
 
+    function renderScoreHistoryHTML() {
+      const history = getScoreHistory()
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      const recent = history.slice(0, 5);
+      const bestPct = history.length > 0
+        ? Math.max(...history.map(item => Number(item.pct) || 0)).toFixed(1)
+        : '0.0';
+      const avgPct = history.length > 0
+        ? (history.reduce((sum, item) => sum + (Number(item.pct) || 0), 0) / history.length).toFixed(1)
+        : '0.0';
+
+      const rows = recent.length === 0
+        ? '<div class="history-empty">No saved attempts yet.</div>'
+        : recent.map((item, index) => `
+          <div class="score-history-row ${index === 0 ? 'is-latest' : ''}">
+            <span class="history-date">${escapeHTML(formatAttemptDate(item.timestamp))}${index === 0 ? ' - Latest' : ''}</span>
+            <span class="history-score">${escapeHTML(item.earned)} / ${escapeHTML(item.total)}</span>
+            <span class="history-pct ${item.passed ? 'passed' : 'failed'}">${escapeHTML(item.pct)}%</span>
+            <span class="history-time">${escapeHTML(formatDuration(item.timeSpentSec))}${item.autoSubmit ? ' - auto' : ''}</span>
+          </div>
+        `).join('');
+
+      return `
+        <div class="score-history">
+          <div class="score-history-header">
+            <div>
+              <h3>Score History</h3>
+              <div class="score-history-summary">Attempts: ${history.length} | Best: ${bestPct}% | Average: ${avgPct}%</div>
+            </div>
+            <button class="clear-history-btn" id="clear-score-history" type="button">Clear History</button>
+          </div>
+          <div class="score-history-list">
+            ${rows}
+          </div>
+        </div>
+      `;
+    }
+
     function renderSummaryPanel() {
       const existing = document.getElementById('summary-panel');
       if (existing) existing.remove();
@@ -4842,6 +5250,7 @@
           <h3>Per-Type Breakdown</h3>
           ${breakdownHTML}
         </div>
+        ${renderScoreHistoryHTML()}
         <div class="summary-actions">
           <button class="retake-btn" id="retake-btn-summary">↺ Retake Exam</button>
           <button class="back-to-top-summary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to Top</button>
@@ -4857,6 +5266,18 @@
           body: 'Your current results will be cleared and a new exam will begin.',
           confirmLabel: 'Retake Exam',
           onConfirm: retakeExam
+        });
+      });
+      document.getElementById('clear-score-history')?.addEventListener('click', () => {
+        openConfirmModal({
+          title: 'Clear Score History?',
+          body: 'This removes saved attempt scores for this exam on this browser.',
+          confirmLabel: 'Clear History',
+          onConfirm: () => {
+            clearScoreHistory();
+            renderSummaryPanel();
+            showToast('Score history cleared.');
+          }
         });
       });
     }
@@ -5019,6 +5440,7 @@
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.filter === filter ? 'true' : 'false');
       });
+      let visibleCount = 0;
       examState.questions.forEach(q => {
         const card = document.getElementById(`card-${q.id}`);
         if (!card) return;
@@ -5027,8 +5449,10 @@
         if (filter === 'unanswered' || filter === 'skipped') show = !isQuestionAnswered(q);
         if (filter === 'correct')   show = card.classList.contains('correct-card');
         if (filter === 'incorrect') show = card.classList.contains('incorrect-card');
+        show = show && questionMatchesSearch(q);
         card.style.display = show ? '' : 'none';
         if (show) {
+          visibleCount++;
           card.classList.remove('filter-pop');
           requestAnimationFrame(() => {
             card.classList.add('filter-pop');
@@ -5036,7 +5460,9 @@
           });
         }
       });
+      updateSearchUI(visibleCount);
       updateSectionVisibility();
+      updateMobileBottomNav();
       if (options.scrollToFirst) {
         requestAnimationFrame(() => {
           const firstVisible = getVisibleQuestionCards()[0];
@@ -5076,6 +5502,39 @@
       const currentIndex = Math.max(0, cards.indexOf(active));
       const nextIndex = Math.min(cards.length - 1, Math.max(0, currentIndex + direction));
       smoothScrollToCard(cards[nextIndex]);
+    }
+
+    function focusQuestionSearch() {
+      const searchInput = document.getElementById('question-search-input');
+      if (!searchInput) return;
+      const toolbar = document.getElementById('filter-toolbar');
+      if (toolbar) {
+        const targetTop = Math.max(0, toolbar.getBoundingClientRect().top + window.scrollY - 64);
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      }
+      requestAnimationFrame(() => searchInput.focus());
+    }
+
+    function handleMobileSubmitAction() {
+      if (examState.submitted) {
+        document.getElementById('summary-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      openSubmitModal(() => submitExam(false));
+    }
+
+    function updateMobileBottomNav() {
+      const submitBtn = document.getElementById('mobile-nav-submit');
+      const prevBtn = document.getElementById('mobile-nav-prev');
+      const nextBtn = document.getElementById('mobile-nav-next');
+      const hasVisibleCards = getVisibleQuestionCards().length > 0;
+      if (submitBtn) {
+        submitBtn.textContent = examState.submitted ? 'Summary' : 'Submit';
+        submitBtn.setAttribute('aria-label', examState.submitted ? 'Back to summary' : 'Submit exam');
+      }
+      [prevBtn, nextBtn].forEach(btn => {
+        if (btn) btn.disabled = !hasVisibleCards;
+      });
     }
 
     function selectChoiceByShortcut(index) {
@@ -5127,12 +5586,15 @@
       Object.assign(examState, {
         answers: {}, flagged: {}, currentStreak: 0, longestStreak: 0,
         submitted: false, startTime: null, remainingTime: null, questions: [],
-        _totalPts: 0, _earnedPts: 0, _passingPts: 0, _breakdown: {}
+        _totalPts: 0, _earnedPts: 0, _passingPts: 0, _breakdown: {},
+        _historyRecorded: false, _historyId: null
       });
       toastFired  = { half: false, quarter: false };
       toastQueue  = [];
       toastActive = false;
       activeFilter = 'all';
+      activeSearchTerm = '';
+      updateSearchUI(0);
 
       // Reset UI
       document.getElementById('questions-container').innerHTML = '<div id="loading-indicator"><div class="spinner"></div><p>Preparing your exam...</p></div>';
@@ -5156,6 +5618,7 @@
        11. PAGE LOAD ENTRY POINT
     ===================================================== */
     (function init() {
+      applyTheme(getPreferredTheme());
       applyBranding();
 
       // Detect localStorage
@@ -5167,11 +5630,21 @@
       // Theme toggle
       const themeBtn = document.getElementById('theme-toggle-btn');
       themeBtn.addEventListener('click', () => {
-        const isLight = document.body.classList.contains('light');
-        document.body.classList.toggle('dark', isLight);
-        document.body.classList.toggle('light', !isLight);
-        themeBtn.textContent = isLight ? '☀️ Light' : '🌙 Dark';
-        themeBtn.setAttribute('aria-label', isLight ? 'Switch to light mode' : 'Switch to dark mode');
+        const nextTheme = document.body.classList.contains('light') ? 'dark' : 'light';
+        applyTheme(nextTheme, true);
+      });
+
+      const searchInput = document.getElementById('question-search-input');
+      const searchClear = document.getElementById('question-search-clear');
+      searchInput.addEventListener('input', () => {
+        activeSearchTerm = searchInput.value.trim();
+        applyFilter(activeFilter, { scrollToFirst: false });
+      });
+      searchClear.addEventListener('click', () => {
+        activeSearchTerm = '';
+        searchInput.value = '';
+        applyFilter(activeFilter, { scrollToFirst: false });
+        searchInput.focus();
       });
 
       // Filter buttons
@@ -5214,6 +5687,11 @@
       document.getElementById('mobile-badge').addEventListener('click', openDrawer);
       document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
       document.getElementById('drawer-close-btn').addEventListener('click', closeDrawer);
+      document.getElementById('mobile-nav-search').addEventListener('click', focusQuestionSearch);
+      document.getElementById('mobile-nav-prev').addEventListener('click', () => scrollRelativeQuestion(-1));
+      document.getElementById('mobile-nav-next').addEventListener('click', () => scrollRelativeQuestion(1));
+      document.getElementById('mobile-nav-drawer').addEventListener('click', openDrawer);
+      document.getElementById('mobile-nav-submit').addEventListener('click', handleMobileSubmitAction);
 
       // Swipe to close drawer
       let touchStartX = 0;
