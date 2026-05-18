@@ -12,18 +12,19 @@
        CSS VARIABLES & THEMING
     ===================================================== */
     :root {
-      --color-primary:        #4f83cc;
-      --color-primary-hover:  #3a6db5;
+      --color-primary:        #4f7fff;
+      --color-primary-hover:  #3a6bf5;
       --color-accent:         #f5a623;
       --color-accent-hover:   #e09410;
-      --color-success:        #16a34a;
+      --color-success:        #10b981;
       --color-danger:         #dc2626;
       --color-warning:        #d97706;
-      --color-bg:             #0f172a;
-      --color-card:           #1e293b;
-      --color-border:         #334155;
+      --color-bg:             #080d1a;
+      --color-card:           #0d1326;
+      --color-border:         rgba(79, 127, 255, 0.20);
       --color-text-primary:   #f1f5f9;
       --color-text-secondary: #94a3b8;
+      --color-primary-glow:   rgba(79, 127, 255, 0.18);
       --font-heading: 'Sora', system-ui, -apple-system, sans-serif;
       --font-body:    'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --layout-max:   1680px;
@@ -31,18 +32,22 @@
       --radius-btn:   8px;
       --shadow:       0 4px 12px rgba(0,0,0,0.08);
       --shadow-strong: 0 18px 42px rgba(0,0,0,0.18);
-      --color-choice-bg: rgba(15,23,42,0.34);
+      --color-choice-bg: rgba(13, 19, 38, 0.60);
       --color-result-bg: rgba(15,23,42,0.24);
+      --theme-x: calc(100% - 88px);
+      --theme-y: 28px;
+      --theme-radius: 1600px;
+      --theme-wipe-color: #f0f4ff;
     }
     body.light {
-      --color-primary:        #2563eb;
+      --color-primary:        #3b6ff4;
       --color-primary-hover:  #1d4ed8;
       --color-accent:         #f5a623;
       --color-accent-hover:   #e09410;
       --color-success:        #16a34a;
       --color-danger:         #dc2626;
       --color-warning:        #d97706;
-      --color-bg:             #f4f7fb;
+      --color-bg:             #f0f4ff;
       --color-card:           #ffffff;
       --color-border:         #d8e0ea;
       --color-text-primary:   #172033;
@@ -57,22 +62,69 @@
        RESET & BASE
     ===================================================== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: auto; }
     body {
       background:
+        radial-gradient(circle at 18px 18px, rgba(148,163,184,0.07) 1px, transparent 1.5px),
+        radial-gradient(circle at 20% 10%, rgba(79,127,255,0.10), transparent 28%),
         linear-gradient(90deg, rgba(79,131,204,0.08), transparent 20%, transparent 80%, rgba(245,166,35,0.05)),
         var(--color-bg);
+      background-size: 34px 34px, 100% 100%, 100% 100%, auto;
       color: var(--color-text-primary);
       font-family: var(--font-body);
       font-size: 1rem;
       line-height: 1.6;
-      transition: background 0.2s, color 0.2s;
+      transition: background-color 0.2s ease, color 0.2s ease;
       min-height: 100vh;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      left: var(--theme-x);
+      top: var(--theme-y);
+      width: 120vmax;
+      height: 120vmax;
+      z-index: 10000;
+      pointer-events: none;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, var(--theme-wipe-color) 0 54%, color-mix(in srgb, var(--theme-wipe-color) 72%, transparent) 66%, transparent 72%);
+      opacity: 0;
+      transform: translate3d(-50%, -50%, 0) scale(0.04);
+      transform-origin: center;
+      will-change: transform, opacity;
+      contain: paint;
+    }
+    body.theme-rippling::after {
+      animation: themeRipple 0.24s ease-out both;
+    }
+    html.theme-view-transition-active *,
+    html.theme-view-transition-active *::before,
+    html.theme-view-transition-active *::after {
+      transition: none !important;
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+    ::view-transition-old(root) { z-index: 0; }
+    ::view-transition-new(root) { z-index: 1; }
+    html.theme-view-transition-active::view-transition-new(root) {
+      animation: themeViewReveal 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+      transform: translateZ(0);
+    }
+    html.theme-view-transition-active::view-transition-old(root) {
+      animation: themeViewHold 0.52s ease both;
+      transform: translateZ(0);
     }
     body.light {
       background:
+        radial-gradient(circle at 18px 18px, rgba(59,111,244,0.055) 1px, transparent 1.5px),
+        radial-gradient(circle at 20% 10%, rgba(59,111,244,0.09), transparent 30%),
         linear-gradient(90deg, rgba(37,99,235,0.06), transparent 24%, transparent 80%, rgba(245,166,35,0.06)),
         var(--color-bg);
+      background-size: 34px 34px, 100% 100%, 100% 100%, auto;
     }
     body.light #top-bar,
     body.light #navigator,
@@ -145,6 +197,7 @@
       background: var(--color-card);
       border-bottom: 1px solid var(--color-border);
       box-shadow: var(--shadow);
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .top-bar-inner {
       max-width: var(--layout-max);
@@ -178,48 +231,58 @@
       flex-shrink: 0;
     }
     .timer-cluster {
-      display: grid;
-      gap: 4px;
-      min-width: 116px;
-      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 58px;
+      padding: 2px 0;
+    }
+    .timer-ring-wrap {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .timer-ring-svg {
+      position: absolute;
+      inset: 0;
+    }
+    .timer-ring-track {
+      stroke: rgba(79, 127, 255, 0.15);
+    }
+    .timer-ring-fill {
+      stroke: var(--color-primary);
+      transition: stroke-dashoffset 1s linear, stroke 0.3s;
+    }
+    .timer-ring-fill.timer-drain-warning { stroke: var(--color-warning); }
+    .timer-ring-fill.timer-drain-danger  { stroke: var(--color-danger); }
+    .timer-ring-submitted {
+      stroke: var(--color-text-secondary);
     }
     #timer-display {
+      position: relative;
+      z-index: 1;
       font-family: var(--font-heading);
-      font-size: 1.1rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      min-width: 72px;
-      text-align: right;
-      padding: 0 2px;
+      min-width: unset;
+      text-align: center;
+      padding: 0;
       border-radius: var(--radius-btn);
       transition: color 0.2s;
-    }
-    #timer-drain-track {
-      width: 100%;
-      height: 5px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(148,163,184,0.24);
-      box-shadow: inset 0 0 0 1px rgba(148,163,184,0.12);
-    }
-    #timer-drain-fill {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--color-accent), #facc15);
-      box-shadow: 0 0 14px rgba(245,166,35,0.36);
-      transition: width 1s linear, background 0.2s;
-    }
-    #timer-drain-fill.timer-drain-warning {
-      background: linear-gradient(90deg, var(--color-warning), var(--color-accent));
-    }
-    #timer-drain-fill.timer-drain-danger {
-      background: linear-gradient(90deg, var(--color-danger), var(--color-accent));
     }
     .timer-normal  { color: var(--color-primary); }
     .timer-warning { color: var(--color-warning); }
     .timer-danger  { color: var(--color-danger); animation: pulse 0.8s ease-in-out infinite alternate; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+
+    @property --score-fill {
+      syntax: '<percentage>';
+      inherits: false;
+      initial-value: 0%;
+    }
 
     .top-github-link {
       display: inline-flex;
@@ -255,11 +318,28 @@
     }
     #theme-toggle-btn:hover { background: var(--color-border); }
     #theme-toggle-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    #shortcut-help-btn {
+      width: 34px;
+      min-height: 34px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: transparent;
+      color: var(--color-text-primary);
+      font-weight: 900;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    #shortcut-help-btn:hover {
+      background: var(--color-choice-bg);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    #shortcut-help-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     @media (max-width: 767px) {
       .top-bar-inner { padding: 0 12px; gap: 8px; }
       .top-bar-meta { display: none; }
-      .timer-cluster { min-width: 88px; }
-      #timer-display { min-width: 62px; font-size: 1rem; }
+      .timer-cluster { min-width: 52px; }
+      #timer-display { font-size: 0.72rem; }
       .top-github-link .github-text { display: none; }
       .top-github-link { width: 34px; padding: 6px; }
     }
@@ -268,7 +348,7 @@
        PROGRESS BAR
     ===================================================== */
     #progress-bar-track {
-      height: 4px;
+      height: 6px;
       background: var(--color-border);
       position: sticky;
       top: 56px;
@@ -276,9 +356,22 @@
     }
     #progress-bar-fill {
       height: 100%;
-      background: var(--color-primary);
+      background: linear-gradient(90deg, var(--color-primary), #7c6ef8);
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.4s ease;
+      position: relative;
+    }
+    #progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-glow);
     }
 
     /* =====================================================
@@ -292,8 +385,7 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-      position: sticky;
-      top: 60px;
+      position: relative;
       z-index: 198;
       background: rgba(30,41,59,0.92);
       border-bottom: 1px solid var(--color-border);
@@ -496,6 +588,33 @@
       padding: 5px 10px;
       white-space: nowrap;
     }
+    .toolbar-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 34px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: var(--color-choice-bg);
+      color: var(--color-text-secondary);
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .toolbar-toggle:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+    .toolbar-toggle[aria-pressed="true"] {
+      background: rgba(16,185,129,0.13);
+      border-color: rgba(16,185,129,0.45);
+      color: var(--color-success);
+    }
+    .toolbar-toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     .review-summary-btn {
       background: rgba(245,166,35,0.1);
       border: 1px solid rgba(245,166,35,0.38);
@@ -517,7 +636,7 @@
     .review-retake-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
     .section-jump-row {
       flex: 1 0 100%;
-      display: flex;
+      display: none;
       align-items: center;
       gap: 8px;
       padding-top: 10px;
@@ -608,13 +727,14 @@
     #main-layout {
       max-width: var(--layout-max);
       margin: 0 auto;
-      padding: 20px 24px 32px;
+      padding: 20px 24px 40px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 320px;
       gap: 28px;
       align-items: start;
     }
     #question-column { min-width: 0; }
+    #questions-container { padding-bottom: clamp(280px, 45vh, 480px); }
     @media (min-width: 1600px) {
       #main-layout {
         grid-template-columns: minmax(0, 1fr) 340px;
@@ -626,13 +746,17 @@
     @media (max-width: 1023px) {
       #main-layout { grid-template-columns: 1fr; }
       #navigator { display: none; }
+      .section-jump-row { display: flex; }
     }
 
     /* =====================================================
        EXAM INTRO HEADER
     ===================================================== */
     #exam-header {
-      background: var(--color-card);
+      background:
+        linear-gradient(135deg, rgba(79,127,255,0.18), transparent 34%),
+        linear-gradient(120deg, rgba(245,166,35,0.10), transparent 42%),
+        var(--color-card);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-card);
       padding: 24px 28px;
@@ -640,13 +764,79 @@
       box-shadow: var(--shadow-strong);
       position: relative;
       overflow: hidden;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     #exam-header::before {
       content: '';
       position: absolute;
-      inset: 0 auto 0 0;
-      width: 4px;
-      background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(79,127,255,0.13) 38%, rgba(245,166,35,0.12) 55%, transparent 72%);
+      background-size: 220% 100%;
+      animation: headerGradient 7s ease-in-out infinite alternate;
+      opacity: 0.86;
+    }
+    #exam-header::after {
+      content: attr(data-code);
+      position: absolute;
+      right: 22px;
+      bottom: -34px;
+      font-family: var(--font-heading);
+      font-size: clamp(4rem, 14vw, 9rem);
+      font-weight: 800;
+      color: rgba(148,163,184,0.08);
+      line-height: 1;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+    #exam-header > * {
+      position: relative;
+      z-index: 1;
+    }
+    .exam-header-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+    }
+    .exam-header-progress {
+      --header-progress: 0%;
+      width: 92px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(var(--color-primary) var(--header-progress), rgba(148,163,184,0.18) 0);
+      box-shadow: inset 0 0 0 1px rgba(148,163,184,0.12), 0 10px 28px rgba(79,127,255,0.16);
+    }
+    .exam-header-progress::before {
+      content: '';
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+    }
+    .exam-header-progress-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      line-height: 1.1;
+    }
+    #exam-header-progress-value {
+      font-family: var(--font-heading);
+      color: var(--color-text-primary);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .exam-header-progress-inner small {
+      color: var(--color-text-secondary);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
     #exam-header h1 {
       font-size: 1.55rem;
@@ -687,21 +877,30 @@
       color: var(--color-text-secondary);
       font-style: italic;
     }
+    @media (max-width: 767px) {
+      #exam-header { padding: 20px; }
+      .exam-header-main { grid-template-columns: 1fr; }
+      .exam-header-progress { width: 76px; }
+      #exam-header h1 { font-size: 1.28rem; }
+    }
 
     /* =====================================================
        SECTION HEADERS
     ===================================================== */
     .section-header {
       font-family: var(--font-heading);
-      font-size: 1rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--color-accent);
-      padding: 14px 0 9px 0;
+      padding: 16px 0 10px 16px;
       border-bottom: 1px solid var(--color-border);
-      margin: 18px 0 16px;
-      letter-spacing: 0.02em;
+      border-left: 3px solid var(--color-accent);
+      margin: 20px 0 16px;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
-      scroll-margin-top: 164px;
+      border-radius: 0 4px 4px 0;
+      background: rgba(245, 158, 11, 0.04);
+      scroll-margin-top: 210px;
     }
 
     /* =====================================================
@@ -713,16 +912,19 @@
       border-radius: var(--radius-card);
       padding: 18px 20px;
       margin-bottom: 14px;
-      box-shadow: var(--shadow);
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-      scroll-margin-top: 164px;
+      box-shadow: 0 0 0 1px rgba(79, 127, 255, 0.06), var(--shadow);
+      transition: background-color 0.18s ease, border-color 0.16s, box-shadow 0.16s, transform 0.16s;
+      scroll-margin-top: 210px;
     }
-    .question-card:hover { box-shadow: var(--shadow-strong); }
+    .question-card:hover {
+      border-color: rgba(79, 127, 255, 0.35);
+      box-shadow: 0 0 0 1px rgba(79, 127, 255, 0.12), var(--shadow-strong);
+    }
     .question-card.is-active {
       box-shadow: inset 4px 0 0 var(--color-primary), var(--shadow-strong);
     }
-    .question-card.filter-pop { animation: filterIn 0.22s ease both; }
-    .question-card.jump-highlight { animation: jumpGlow 0.8s ease; }
+    .question-card.filter-pop { animation: filterIn 0.14s ease both; }
+    .question-card.jump-highlight { animation: jumpGlow 0.42s ease; }
     .question-card.flagged { border-color: var(--color-accent); }
     .question-card.submitted.correct-card { border-color: var(--color-success); }
     .question-card.submitted.incorrect-card { border-color: var(--color-danger); }
@@ -825,11 +1027,11 @@
     .flag-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     .question-text {
-      font-size: 0.98rem;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
       color: var(--color-text-primary);
       margin-bottom: 14px;
-      line-height: 1.58;
+      line-height: 1.62;
       overflow-wrap: break-word;
     }
 
@@ -860,13 +1062,15 @@
     .choice-label:hover { border-color: var(--color-primary); background: rgba(79,131,204,0.06); }
     .choice-label:has(input[type="radio"]:checked) {
       border-color: var(--color-primary);
-      background: rgba(79,131,204,0.12);
-      transform: translateX(2px);
+      background: rgba(79, 127, 255, 0.15);
+      transform: translateX(4px);
+      border-left-width: 3px;
     }
     .choice-label:has(input[type="radio"]:checked) .choice-letter {
       border-color: var(--color-primary);
       background: var(--color-primary);
       color: #fff;
+      box-shadow: 0 0 0 3px var(--color-primary-glow);
     }
     .choice-label input[type="radio"] { accent-color: var(--color-primary); width: 16px; height: 16px; flex-shrink: 0; }
     .choice-label input[type="radio"]:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
@@ -1202,24 +1406,40 @@
     }
     .nav-cell {
       aspect-ratio: 1;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
       font-size: 0.78rem;
       font-weight: 800;
-      background: var(--color-bg);
-      color: var(--color-text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      color: #6b7eaa;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: transform 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
       display: flex; align-items: center; justify-content: center;
       position: relative;
       min-height: 40px;
     }
-    .nav-cell:hover { background: var(--color-border); }
+    .nav-cell:hover {
+      transform: scale(1.1);
+      border-color: rgba(79, 127, 255, 0.4);
+    }
     .nav-cell.nav-active { outline: 2px solid var(--color-primary); }
-    .nav-cell.answered  { background: rgba(79,131,204,0.24); color: #bfdbfe; border-color: rgba(147,197,253,0.36); }
-    .nav-cell.flagged   { background: rgba(245,166,35,0.24);  color: #fde68a; border-color: rgba(245,166,35,0.46); }
-    .nav-cell.nav-correct   { background: rgba(22,163,74,0.24);  color: #bbf7d0; border-color: rgba(74,222,128,0.42); }
-    .nav-cell.nav-incorrect { background: rgba(220,38,38,0.28);  color: #fecaca; border-color: rgba(248,113,113,0.42); }
+    .nav-cell.answered  { background: rgba(79, 127, 255, 0.28); color: #93b4ff; border-color: rgba(79, 127, 255, 0.50); }
+    .nav-cell.flagged   { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.50); }
+    .nav-cell.flagged::after {
+      content: '⚑';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      font-size: 7px;
+      color: #fbbf24;
+    }
+    .nav-cell.nav-correct {
+      background: rgba(16, 185, 129, 0.28);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.50);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12);
+    }
+    .nav-cell.nav-incorrect { background: rgba(239, 68, 68, 0.28); color: #f87171; border-color: rgba(239, 68, 68, 0.50); }
     body.light .nav-cell.answered { color: #1d4ed8; }
     body.light .nav-cell.flagged { color: #92400e; }
     body.light .nav-cell.nav-correct { color: #166534; }
@@ -1541,9 +1761,10 @@
       padding: 26px 28px;
       margin-bottom: 24px;
       box-shadow: var(--shadow-strong);
-      scroll-margin-top: 164px;
+      scroll-margin-top: 210px;
       position: relative;
       overflow: hidden;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     #summary-panel::before {
       content: '';
@@ -1553,6 +1774,14 @@
       background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-success));
     }
     #summary-panel.summary-enter { animation: summaryEnter 0.38s ease both; }
+    .summary-stagger-item {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .summary-stagger-item.summary-stagger-in {
+      animation: summarySectionIn 0.46s ease forwards;
+      animation-delay: var(--summary-delay, 0ms);
+    }
     .summary-hero {
       display: grid;
       grid-template-columns: 150px minmax(0, 1fr);
@@ -1692,10 +1921,13 @@
     .breakdown-meter-fill {
       display: block;
       height: 100%;
-      width: var(--breakdown-width);
+      width: 0%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--color-primary), var(--breakdown-color, var(--color-success)));
-      transition: width 0.35s ease;
+      transition: width 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .breakdown-meter-fill.breakdown-animate {
+      width: var(--breakdown-width);
     }
     .breakdown-score {
       color: var(--color-text-primary);
@@ -1825,8 +2057,43 @@
     }
 
     @keyframes filterIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translate3d(0, 5px, 0); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes summarySectionIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes headerGradient {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+    @keyframes themeRipple {
+      0% {
+        opacity: 0.94;
+        transform: translate3d(-50%, -50%, 0) scale(0.04);
+      }
+      74% { opacity: 0.90; }
+      100% {
+        opacity: 0;
+        transform: translate3d(-50%, -50%, 0) scale(1);
+      }
+    }
+    @keyframes themeViewReveal {
+      from {
+        clip-path: circle(0px at var(--theme-x) var(--theme-y));
+      }
+      to {
+        clip-path: circle(var(--theme-radius) at var(--theme-x) var(--theme-y));
+      }
+    }
+    @keyframes themeViewHold {
+      from { opacity: 1; }
+      to { opacity: 0.985; }
+    }
+    @keyframes toastCountdown {
+      from { transform: scaleX(1); }
+      to { transform: scaleX(0); }
     }
     @keyframes jumpGlow {
       0%, 100% { box-shadow: inset 4px 0 0 var(--color-primary), var(--shadow); }
@@ -1842,6 +2109,13 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .summary-stagger-item {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .breakdown-meter-fill {
+        width: var(--breakdown-width) !important;
+      }
       *, *::before, *::after {
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
@@ -1881,11 +2155,13 @@
     .question-diagnostics ul { margin: 8px 0 0 20px; }
     .question-diagnostics li { margin-bottom: 4px; }
     .spinner {
-      width: 40px; height: 40px;
+      width: 36px; height: 36px;
       border: 3px solid var(--color-border);
       border-top-color: var(--color-primary);
+      border-right-color: rgba(79, 127, 255, 0.4);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s ease-in-out infinite;
+      box-shadow: 0 0 0 4px var(--color-primary-glow);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -1893,15 +2169,110 @@
        RESUME SCREEN
     ===================================================== */
     #resume-screen {
-      background: var(--color-card);
+      background:
+        linear-gradient(135deg, rgba(79,127,255,0.16), transparent 38%),
+        var(--color-card);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-card);
       padding: 32px;
-      text-align: center;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-strong);
+      overflow: hidden;
+      position: relative;
     }
-    #resume-screen h2 { font-size: 1.3rem; color: var(--color-primary); margin-bottom: 12px; }
-    #resume-screen p { color: var(--color-text-secondary); margin-bottom: 24px; }
+    #resume-screen::after {
+      content: attr(data-code);
+      position: absolute;
+      right: 20px;
+      bottom: -24px;
+      font-family: var(--font-heading);
+      font-size: clamp(3.5rem, 13vw, 7rem);
+      font-weight: 800;
+      color: rgba(148,163,184,0.08);
+      line-height: 1;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+    #resume-screen > * {
+      position: relative;
+      z-index: 1;
+    }
+    .resume-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      text-align: left;
+      margin-bottom: 22px;
+    }
+    #resume-screen h2 { font-size: 1.36rem; color: var(--color-primary); margin-bottom: 8px; }
+    #resume-screen p { color: var(--color-text-secondary); margin-bottom: 0; }
+    .resume-ring {
+      --resume-progress: 0%;
+      width: 116px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(var(--color-primary) var(--resume-progress), rgba(148,163,184,0.18) 0);
+      box-shadow: inset 0 0 0 1px rgba(148,163,184,0.12);
+    }
+    .resume-ring::before {
+      content: '';
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+    }
+    .resume-ring-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      line-height: 1.1;
+    }
+    .resume-ring-value {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--color-text-primary);
+    }
+    .resume-ring-label {
+      color: var(--color-text-secondary);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .resume-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 12px;
+      margin: 20px 0 24px;
+    }
+    .resume-stat {
+      background: var(--color-choice-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      padding: 12px;
+      text-align: left;
+    }
+    .resume-stat-label {
+      display: block;
+      color: var(--color-text-secondary);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .resume-stat-value {
+      display: block;
+      margin-top: 3px;
+      color: var(--color-text-primary);
+      font-weight: 800;
+      font-size: 1.03rem;
+    }
     .resume-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .resume-btn {
       background: var(--color-primary);
@@ -1931,6 +2302,11 @@
     }
     .fresh-btn:hover { border-color: var(--color-danger); color: var(--color-danger); }
     .fresh-btn:focus-visible { outline: 2px solid var(--color-danger); outline-offset: 2px; }
+    @media (max-width: 767px) {
+      #resume-screen { padding: 24px; }
+      .resume-header { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+      .resume-stat-grid { grid-template-columns: 1fr; }
+    }
 
     /* =====================================================
        MODAL
@@ -1956,6 +2332,44 @@
     .modal-card h3 { font-size: 1.2rem; color: var(--color-text-primary); margin-bottom: 12px; }
     .modal-card p { color: var(--color-text-secondary); font-size: 0.92rem; margin-bottom: 24px; }
     .modal-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+    .shortcut-card {
+      max-width: 620px;
+    }
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0 24px;
+    }
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      background: var(--color-choice-bg);
+      padding: 10px 12px;
+      color: var(--color-text-secondary);
+      font-size: 0.88rem;
+    }
+    .shortcut-row kbd {
+      min-width: 34px;
+      text-align: center;
+      border: 1px solid var(--color-border);
+      border-bottom-width: 3px;
+      border-radius: 6px;
+      background: var(--color-card);
+      color: var(--color-text-primary);
+      padding: 3px 7px;
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    @media (max-width: 620px) {
+      .shortcut-grid { grid-template-columns: 1fr; }
+    }
     .modal-cancel-btn {
       background: transparent;
       color: var(--color-text-secondary);
@@ -2048,20 +2462,55 @@
       pointer-events: none;
     }
     .toast {
-      background: var(--color-card);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--color-card) 92%, var(--color-warning));
+      border: 1px solid rgba(245,166,35,0.28);
       border-left: 4px solid var(--color-warning);
       border-radius: 8px;
-      padding: 12px 20px;
+      padding: 12px 16px 14px;
       font-family: var(--font-body);
       font-size: 0.9rem;
       color: var(--color-text-primary);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.24);
       opacity: 0;
-      transition: opacity 0.25s ease;
+      transform: translateY(18px) scale(0.98);
+      transition: opacity 0.25s ease, transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
       pointer-events: none;
       white-space: nowrap;
+      min-width: min(420px, calc(100vw - 32px));
     }
-    .toast.toast-visible { opacity: 1; }
+    .toast-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(245,166,35,0.16);
+      color: var(--color-accent);
+      border: 1px solid rgba(245,166,35,0.34);
+      font-weight: 900;
+      font-family: var(--font-heading);
+    }
+    .toast-message { min-width: 0; overflow-wrap: anywhere; }
+    .toast-timer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-warning), var(--color-accent));
+      transform-origin: left center;
+      animation: toastCountdown var(--toast-duration, 4000ms) linear forwards;
+    }
+    .toast.toast-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
     @media (max-width: 767px) {
       #toast-container { bottom: 86px; }
       .toast {
@@ -2103,14 +2552,18 @@
       <span class="top-bar-meta" id="top-bar-meta"></span>
       <div class="top-bar-right">
         <div class="timer-cluster" aria-label="Time remaining">
-          <span id="timer-display" class="timer-normal" aria-live="polite">--:--</span>
-          <div id="timer-drain-track" aria-hidden="true">
-            <span id="timer-drain-fill"></span>
+          <div class="timer-ring-wrap">
+            <svg class="timer-ring-svg" viewBox="0 0 52 52" width="52" height="52" aria-hidden="true" focusable="false">
+              <circle class="timer-ring-track" cx="26" cy="26" r="22" fill="none" stroke-width="4"></circle>
+              <circle class="timer-ring-fill" cx="26" cy="26" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 26 26)"></circle>
+            </svg>
+            <span id="timer-display" class="timer-normal" aria-live="polite">--:--</span>
           </div>
         </div>
         <a id="top-github-link" class="top-github-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub profile">
           <span class="github-text">GitHub</span><span aria-hidden="true">↗</span>
         </a>
+        <button id="shortcut-help-btn" type="button" aria-label="Show keyboard shortcuts" title="Keyboard shortcuts">?</button>
         <button id="theme-toggle-btn" aria-label="Switch to light mode">☀️ Light</button>
       </div>
     </div>
@@ -2148,7 +2601,7 @@
       </label>
       <button class="search-nav-btn" id="search-prev-btn" type="button" aria-label="Previous search match">Prev</button>
       <button class="search-nav-btn" id="search-next-btn" type="button" aria-label="Next search match">Next</button>
-      <span id="search-count" class="status-pill" hidden aria-live="polite"></span>
+      <span id="search-count" class="status-pill" hidden role="status" aria-live="polite"></span>
     </div>
     <div class="toolbar-group review-controls">
       <button class="review-summary-btn post-submit-only" id="review-summary-btn">Summary</button>
@@ -2156,6 +2609,7 @@
     </div>
     <span class="toolbar-spacer"></span>
     <div class="toolbar-group status-controls">
+      <button id="auto-advance-toggle" class="toolbar-toggle" type="button" aria-pressed="false">Auto-advance Off</button>
       <span id="answered-count" class="status-pill" aria-live="polite">Answered: 0 / 0</span>
       <span id="flagged-count" class="status-pill" aria-live="polite">Flagged: 0</span>
       <button id="jump-submit-btn" aria-label="Submit exam">Submit</button>
@@ -2172,9 +2626,19 @@
     <div id="question-column">
       <!-- EXAM HEADER -->
       <div id="exam-header" style="display:none">
-        <h1 id="exam-header-title"></h1>
-        <p class="exam-topic" id="exam-header-topic"></p>
-        <p class="exam-school" id="exam-header-school"></p>
+        <div class="exam-header-main">
+          <div class="exam-header-copy">
+            <h1 id="exam-header-title"></h1>
+            <p class="exam-topic" id="exam-header-topic"></p>
+            <p class="exam-school" id="exam-header-school"></p>
+          </div>
+          <div class="exam-header-progress" id="exam-header-progress" aria-hidden="true">
+            <div class="exam-header-progress-inner">
+              <span id="exam-header-progress-value">0%</span>
+              <small>done</small>
+            </div>
+          </div>
+        </div>
         <div class="exam-meta-row">
           <span class="exam-meta-item" id="exam-meta-time"></span>
           <span class="exam-meta-item" id="exam-meta-questions"></span>
@@ -2214,11 +2678,11 @@
 
   <!-- MOBILE BOTTOM NAV -->
   <nav id="mobile-bottom-nav" aria-label="Mobile exam actions">
-    <button class="mobile-bottom-btn" id="mobile-nav-search" type="button"><span class="mobile-btn-icon">?</span><span>Find</span></button>
-    <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button"><span class="mobile-btn-icon">&lt;</span><span>Prev</span></button>
-    <button class="mobile-bottom-btn" id="mobile-nav-next" type="button"><span class="mobile-btn-icon">&gt;</span><span>Next</span></button>
-    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button"><span class="mobile-btn-icon">#</span><span>Nav</span></button>
-    <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button"><span class="mobile-btn-icon">!</span><span>Submit</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-search" type="button"><span class="mobile-btn-icon">⌕</span><span>Find</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button"><span class="mobile-btn-icon">←</span><span>Prev</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-next" type="button"><span class="mobile-btn-icon">→</span><span>Next</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button"><span class="mobile-btn-icon">⊞</span><span>Nav</span></button>
+    <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button"><span class="mobile-btn-icon">✓</span><span>Submit</span></button>
   </nav>
 
   <!-- DRAWER BACKDROP -->
@@ -2265,6 +2729,25 @@
       <div class="modal-actions">
         <button class="modal-cancel-btn" id="confirm-modal-cancel">Cancel</button>
         <button class="modal-confirm-btn" id="confirm-modal-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEYBOARD SHORTCUTS MODAL -->
+  <div id="shortcut-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="shortcut-modal-title">
+    <div class="modal-card shortcut-card">
+      <h3 id="shortcut-modal-title">Keyboard Shortcuts</h3>
+      <p>Use these while a question card is active.</p>
+      <div class="shortcut-grid">
+        <div class="shortcut-row"><kbd>1-4</kbd><span>Select answer choice</span></div>
+        <div class="shortcut-row"><kbd>F</kbd><span>Flag current question</span></div>
+        <div class="shortcut-row"><kbd>N</kbd><span>Next visible question</span></div>
+        <div class="shortcut-row"><kbd>P</kbd><span>Previous visible question</span></div>
+        <div class="shortcut-row"><kbd>Ctrl+/</kbd><span>Open this shortcut sheet</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd><span>Close panels or dialogs</span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-confirm-btn" id="shortcut-modal-close">Done</button>
       </div>
     </div>
   </div>
@@ -3461,6 +3944,8 @@
     let activeSearchIndex = 0;
     let preparedQuestionBank = null;
     let questionDiagnostics = [];
+    let autoAdvanceEnabled = false;
+    let autoAdvanceTimer = null;
 
     const TYPE_ORDER = [
       "Multiple Choice",
@@ -3992,8 +4477,24 @@
       return 'dark';
     }
 
-    function applyTheme(theme, shouldPersist = false) {
-      const normalizedTheme = theme === 'light' ? 'light' : 'dark';
+    function setThemeOrigin(originElement) {
+      if (!originElement) return;
+      const rect = originElement.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const radius = Math.ceil(Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      ) * 1.08);
+      [document.documentElement, document.body].forEach(el => {
+        el.style.setProperty('--theme-x', `${x}px`);
+        el.style.setProperty('--theme-y', `${y}px`);
+        el.style.setProperty('--theme-radius', `${radius}px`);
+        el.style.setProperty('--theme-wipe-color', document.body.classList.contains('light') ? '#080d1a' : '#f0f4ff');
+      });
+    }
+
+    function commitTheme(normalizedTheme, shouldPersist) {
       document.body.classList.toggle('light', normalizedTheme === 'light');
       document.body.classList.toggle('dark', normalizedTheme === 'dark');
       const themeBtn = document.getElementById('theme-toggle-btn');
@@ -4005,6 +4506,30 @@
       if (shouldPersist) {
         try { localStorage.setItem(THEME_KEY, normalizedTheme); } catch (e) {}
       }
+    }
+
+    function applyTheme(theme, shouldPersist = false, originElement = null) {
+      const normalizedTheme = theme === 'light' ? 'light' : 'dark';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (originElement) {
+        setThemeOrigin(originElement);
+      }
+      if (originElement && document.startViewTransition && !reduceMotion) {
+        document.documentElement.classList.add('theme-view-transition-active');
+        const transition = document.startViewTransition(() => commitTheme(normalizedTheme, shouldPersist));
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove('theme-view-transition-active');
+        });
+        return;
+      }
+
+      if (originElement && !reduceMotion) {
+        document.body.classList.remove('theme-rippling');
+        document.body.getBoundingClientRect();
+        document.body.classList.add('theme-rippling');
+        window.setTimeout(() => document.body.classList.remove('theme-rippling'), 280);
+      }
+      commitTheme(normalizedTheme, shouldPersist);
     }
 
     function getScoreHistory() {
@@ -4101,15 +4626,33 @@
       const { message, durationMs } = toastQueue.shift();
       const toast = document.createElement('div');
       toast.className = 'toast';
-      toast.textContent = message;
+      toast.style.setProperty('--toast-duration', `${durationMs}ms`);
+      const icon = document.createElement('span');
+      icon.className = 'toast-icon';
+      icon.textContent = '!';
+      icon.setAttribute('aria-hidden', 'true');
+      const messageEl = document.createElement('span');
+      messageEl.className = 'toast-message';
+      messageEl.textContent = message;
+      const timer = document.createElement('span');
+      timer.className = 'toast-timer';
+      timer.setAttribute('aria-hidden', 'true');
+      toast.appendChild(icon);
+      toast.appendChild(messageEl);
+      toast.appendChild(timer);
       document.getElementById('toast-container').appendChild(toast);
       requestAnimationFrame(() => toast.classList.add('toast-visible'));
       setTimeout(() => {
         toast.classList.remove('toast-visible');
-        toast.addEventListener('transitionend', () => {
+        let cleaned = false;
+        const cleanup = () => {
+          if (cleaned) return;
+          cleaned = true;
           toast.remove();
           processToastQueue();
-        }, { once: true });
+        };
+        toast.addEventListener('transitionend', cleanup, { once: true });
+        setTimeout(cleanup, 420);
       }, durationMs);
     }
 
@@ -4262,9 +4805,14 @@
         if (!activeSearchTerm) {
           count.hidden = true;
           count.textContent = '';
+          count.removeAttribute('aria-label');
         } else {
           count.hidden = false;
-          count.textContent = `${visibleCount} match${visibleCount === 1 ? '' : 'es'}`;
+          const label = visibleCount > 0
+            ? `Match ${activeSearchIndex + 1} of ${visibleCount}`
+            : 'No matches';
+          count.textContent = label;
+          count.setAttribute('aria-label', label);
         }
       }
       highlightSearchMatches();
@@ -4312,11 +4860,15 @@
       const count = document.getElementById('answered-count');
       const flagged = document.getElementById('flagged-count');
       const badge = document.getElementById('mobile-badge');
+      const headerProgress = document.getElementById('exam-header-progress');
+      const headerProgressValue = document.getElementById('exam-header-progress-value');
       if (fill)  fill.style.width = `${pct}%`;
       if (track) { track.setAttribute('aria-valuenow', answered); track.setAttribute('aria-valuemax', total); }
       if (count) count.textContent = `Answered: ${answered} / ${total}`;
       if (flagged) flagged.textContent = `Flagged: ${getFlaggedCount()}`;
       if (badge) badge.textContent = `Q ${answered} / ${total}`;
+      if (headerProgress) headerProgress.style.setProperty('--header-progress', `${pct}%`);
+      if (headerProgressValue) headerProgressValue.textContent = `${Math.round(pct)}%`;
 
       // Update nav answered count
       document.getElementById('nav-answered-count').textContent = `${answered} / ${total} answered`;
@@ -4369,7 +4921,7 @@
             flagIcon.className = 'nav-cell-flag';
             cell.appendChild(flagIcon);
           }
-          flagIcon.textContent = isFlagged ? 'F' : '';
+          flagIcon.textContent = '';
         });
       });
       updateSectionPillProgress();
@@ -4389,26 +4941,27 @@
       const mm = String(Math.floor(r / 60)).padStart(2, '0');
       const ss = String(r % 60).padStart(2, '0');
       const el = document.getElementById('timer-display');
-      const drain = document.getElementById('timer-drain-fill');
+      const ringFill = document.querySelector('.timer-ring-fill');
       el.textContent = `${mm}:${ss}`;
       const half    = EXAM_CONFIG.timerSeconds * 0.5;
       const quarter = EXAM_CONFIG.timerSeconds * 0.25;
       el.classList.remove('timer-normal', 'timer-warning', 'timer-danger');
-      if (drain) {
+      if (ringFill) {
+        const circumference = 138.23;
         const pct = EXAM_CONFIG.timerSeconds > 0
-          ? Math.max(0, Math.min(100, (r / EXAM_CONFIG.timerSeconds) * 100))
+          ? Math.max(0, Math.min(1, r / EXAM_CONFIG.timerSeconds))
           : 0;
-        drain.style.width = `${pct}%`;
-        drain.classList.remove('timer-drain-warning', 'timer-drain-danger');
+        ringFill.style.strokeDashoffset = circumference * (1 - pct);
+        ringFill.classList.remove('timer-drain-warning', 'timer-drain-danger', 'timer-ring-submitted');
       }
       if (r > half) {
         el.classList.add('timer-normal');
       } else if (r > quarter) {
         el.classList.add('timer-warning');
-        if (drain) drain.classList.add('timer-drain-warning');
+        if (ringFill) ringFill.classList.add('timer-drain-warning');
       } else {
         el.classList.add('timer-danger');
-        if (drain) drain.classList.add('timer-drain-danger');
+        if (ringFill) ringFill.classList.add('timer-drain-danger');
       }
     }
 
@@ -4482,18 +5035,90 @@
       const progress = document.getElementById('progress-bar-track')?.offsetHeight || 0;
       const toolbar = document.getElementById('filter-toolbar');
       const toolbarVisible = toolbar && toolbar.style.display !== 'none';
-      const toolbarHeight = toolbarVisible ? toolbar.offsetHeight : 0;
-      return topBar + progress + toolbarHeight + 16;
+      const toolbarStyle = toolbar ? getComputedStyle(toolbar) : null;
+      const toolbarPinned = toolbarVisible && toolbarStyle && ['sticky', 'fixed'].includes(toolbarStyle.position);
+      const toolbarHeight = toolbarPinned ? toolbar.offsetHeight : 0;
+      return topBar + progress + toolbarHeight + 24;
     }
 
-    function smoothScrollToCard(card) {
+    function fastScrollTo(top, duration = 190, targetCard = null) {
+      const targetTop = Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight));
+      const startTop = window.scrollY;
+      const distance = targetTop - startTop;
+      const root = document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      const finishScroll = () => {
+        window.scrollTo(0, targetTop);
+        if (targetCard) markActiveQuestionCard(targetCard);
+        root.style.scrollBehavior = previousScrollBehavior;
+      };
+      if (Math.abs(distance) < 4 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finishScroll();
+        return;
+      }
+      if (fastScrollTo._frame) cancelAnimationFrame(fastScrollTo._frame);
+      if (fastScrollTo._finish) clearTimeout(fastScrollTo._finish);
+      const start = performance.now();
+      const easeOut = t => 1 - Math.pow(1 - t, 3);
+      const tick = now => {
+        const progress = Math.min(1, (now - start) / duration);
+        window.scrollTo(0, startTop + distance * easeOut(progress));
+        if (progress < 1) fastScrollTo._frame = requestAnimationFrame(tick);
+      };
+      fastScrollTo._frame = requestAnimationFrame(tick);
+      fastScrollTo._finish = window.setTimeout(() => {
+        if (fastScrollTo._frame) cancelAnimationFrame(fastScrollTo._frame);
+        finishScroll();
+        fastScrollTo._frame = null;
+        fastScrollTo._finish = null;
+      }, duration + 50);
+    }
+
+    function getComfortableCardTop(card) {
+      const topSafe = getStickyScrollOffset();
+      const bottomSafe = window.innerWidth < 768 ? 106 : 36;
+      const availableHeight = Math.max(260, window.innerHeight - topSafe - bottomSafe);
+      const cardHeight = Math.min(card.getBoundingClientRect().height || card.offsetHeight || 0, availableHeight);
+      const centerInset = Math.max(28, (availableHeight - cardHeight) / 2);
+      return Math.max(0, card.getBoundingClientRect().top + window.scrollY - topSafe - centerInset);
+    }
+
+    function getReadableViewportCenter() {
+      const topSafe = getStickyScrollOffset();
+      const bottomSafe = window.innerWidth < 768 ? 106 : 36;
+      return topSafe + Math.max(260, window.innerHeight - topSafe - bottomSafe) / 2;
+    }
+
+    function getNearestQuestionToReadableCenter() {
+      const topSafe = getStickyScrollOffset();
+      const bottomSafe = window.innerWidth < 768 ? 106 : 36;
+      const lowerBound = window.innerHeight - bottomSafe;
+      const center = getReadableViewportCenter();
+      let best = null;
+      let bestDistance = Infinity;
+      getVisibleQuestionCards().forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.bottom < topSafe + 16 || rect.top > lowerBound - 16) return;
+        const cardCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(cardCenter - center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = card;
+        }
+      });
+      return best;
+    }
+
+    function smoothScrollToCard(card, duration = 190) {
       if (!card) return;
-      const targetTop = Math.max(0, card.getBoundingClientRect().top + window.scrollY - getStickyScrollOffset());
-      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      markActiveQuestionCard(card);
+      const targetTop = getComfortableCardTop(card);
+      fastScrollTo(targetTop, duration, card);
       card.classList.remove('jump-highlight');
       requestAnimationFrame(() => {
         card.classList.add('jump-highlight');
-        setTimeout(() => card.classList.remove('jump-highlight'), 850);
+        setTimeout(() => card.classList.remove('jump-highlight'), 520);
       });
     }
 
@@ -4599,6 +5224,48 @@
       submitBtn.onclick = () => { close(); onConfirm(); };
     }
 
+    let shortcutPreviouslyFocused = null;
+
+    function openShortcutModal() {
+      const modal = document.getElementById('shortcut-modal');
+      const closeBtn = document.getElementById('shortcut-modal-close');
+      if (!modal || !closeBtn) return;
+      if (modal.classList.contains('open')) return;
+      shortcutPreviouslyFocused = document.activeElement;
+      modal.classList.add('open');
+      requestAnimationFrame(() => closeBtn.focus());
+
+      function handleShortcutModalKeydown(e) {
+        if (e.key === 'Escape') closeShortcutModal();
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          closeBtn.focus();
+        }
+      }
+
+      modal._shortcutKeydown = handleShortcutModalKeydown;
+      document.addEventListener('keydown', handleShortcutModalKeydown);
+      modal.onclick = (e) => { if (e.target === modal) closeShortcutModal(); };
+      closeBtn.onclick = closeShortcutModal;
+    }
+
+    function closeShortcutModal() {
+      const modal = document.getElementById('shortcut-modal');
+      const closeBtn = document.getElementById('shortcut-modal-close');
+      if (!modal) return;
+      modal.classList.remove('open');
+      if (modal._shortcutKeydown) {
+        document.removeEventListener('keydown', modal._shortcutKeydown);
+        modal._shortcutKeydown = null;
+      }
+      if (closeBtn) closeBtn.onclick = null;
+      modal.onclick = null;
+      if (shortcutPreviouslyFocused && typeof shortcutPreviouslyFocused.focus === 'function') {
+        shortcutPreviouslyFocused.focus();
+      }
+      shortcutPreviouslyFocused = null;
+    }
+
     /* =====================================================
        DRAWER
     ===================================================== */
@@ -4677,6 +5344,7 @@
     function renderExamHeader(totalPts, passingPts) {
       const header = document.getElementById('exam-header');
       header.style.display = '';
+      header.dataset.code = EXAM_CONFIG.subjectCode;
       document.getElementById('exam-header-title').textContent   = `${EXAM_CONFIG.subjectName} — ${EXAM_CONFIG.subjectCode}`;
       document.getElementById('exam-header-topic').textContent   = `Topic: ${EXAM_CONFIG.topic}`;
       document.getElementById('exam-header-school').textContent  = EXAM_CONFIG.school;
@@ -4833,7 +5501,7 @@
           flagBtn.setAttribute('data-question-id', q.id);
           flagBtn.setAttribute('aria-label', `Flag question ${num}`);
           flagBtn.setAttribute('aria-pressed', 'false');
-          flagBtn.textContent = 'F';
+          flagBtn.textContent = '⚑';
           flagBtn.addEventListener('click', () => toggleFlag(q.id));
           headerRight.appendChild(badge);
           headerRight.appendChild(flagBtn);
@@ -4883,21 +5551,10 @@
       // IntersectionObserver
       const observer = new IntersectionObserver(
         (entries) => {
-          const visible = entries
-            .filter(e => e.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-          if (visible) {
-            const qId = visible.target.dataset.questionId;
-            document.querySelectorAll('.question-card').forEach(c =>
-              c.classList.toggle('is-active', c.dataset.questionId === String(qId))
-            );
-            document.querySelectorAll('.nav-cell').forEach(c =>
-              c.classList.toggle('nav-active', c.dataset.questionId === String(qId))
-            );
-            const type = visible.target.dataset.type;
-            document.querySelectorAll('.section-pill, .section-jump-chip').forEach(p =>
-              p.classList.toggle('pill-active', p.dataset.type === type)
-            );
+          if (!entries.some(entry => entry.isIntersecting)) return;
+          const centeredCard = getNearestQuestionToReadableCenter();
+          if (centeredCard) {
+            markActiveQuestionCard(centeredCard);
           }
         },
         { threshold: 0.3, rootMargin: '0px 0px -60% 0px' }
@@ -4928,7 +5585,14 @@
           radio.name = `q-${q.id}`;
           radio.value = choice;
           radio.setAttribute('data-question-id', q.id);
-          radio.addEventListener('change', () => handleAnswer(q.id, choice));
+          radio.addEventListener('change', () => {
+            handleAnswer(q.id, choice);
+            scheduleAutoAdvance(q.id);
+            lbl.animate([
+              { transform: 'translateX(4px) scale(1.02)' },
+              { transform: 'translateX(4px) scale(1)' }
+            ], { duration: 180, easing: 'ease-out' });
+          });
           const span = document.createElement('span');
           span.className = 'choice-text';
           const mark = document.createElement('span');
@@ -4965,7 +5629,14 @@
           radio.name = `q-${q.id}`;
           radio.value = val;
           radio.setAttribute('data-question-id', q.id);
-          radio.addEventListener('change', () => handleAnswer(q.id, val));
+          radio.addEventListener('change', () => {
+            handleAnswer(q.id, val);
+            scheduleAutoAdvance(q.id);
+            lbl.animate([
+              { transform: 'translateX(4px) scale(1.02)' },
+              { transform: 'translateX(4px) scale(1)' }
+            ], { duration: 180, easing: 'ease-out' });
+          });
           const span = document.createElement('span');
           span.className = 'choice-text';
           span.textContent = val;
@@ -5070,13 +5741,21 @@
     function submitExam(autoSubmit) {
       if (examState.submitted) return;
       clearInterval(timerInterval);
+      window.clearTimeout(autoAdvanceTimer);
       examState.submitted = true;
       const timeSpentSec = EXAM_CONFIG.timerSeconds - (examState.remainingTime || 0);
       examState._timeSpent = timeSpentSec;
       const timerEl = document.getElementById('timer-display');
-      const timerDrain = document.getElementById('timer-drain-fill');
-      if (timerEl) timerEl.textContent = 'Submitted';
-      if (timerDrain) timerDrain.style.width = '0%';
+      const timerRing = document.querySelector('.timer-ring-fill');
+      if (timerEl) {
+        timerEl.textContent = 'Done';
+        timerEl.title = 'Submitted';
+      }
+      if (timerRing) {
+        timerRing.style.strokeDashoffset = 138.23;
+        timerRing.classList.remove('timer-drain-warning', 'timer-drain-danger');
+        timerRing.classList.add('timer-ring-submitted');
+      }
 
       // Lock all inputs
       document.querySelectorAll('.question-card .answer-area input, .question-card .answer-area textarea').forEach(el => {
@@ -5366,6 +6045,34 @@
       `;
     }
 
+    function animateSummaryPanel(panel, pctValue) {
+      if (!panel) return;
+      const sections = [
+        panel.querySelector('.summary-hero'),
+        panel.querySelector('.summary-stats'),
+        panel.querySelector('.summary-breakdown'),
+        panel.querySelector('.score-history'),
+        panel.querySelector('.summary-actions')
+      ].filter(Boolean);
+
+      sections.forEach((section, index) => {
+        section.classList.add('summary-stagger-item');
+        section.style.setProperty('--summary-delay', `${index * 100}ms`);
+      });
+
+      const ring = panel.querySelector('.score-ring');
+      requestAnimationFrame(() => {
+        sections.forEach(section => section.classList.add('summary-stagger-in'));
+        if (ring) {
+          ring.style.transition = '--score-fill 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          ring.style.setProperty('--score-fill', `${pctValue}%`);
+        }
+        panel.querySelectorAll('.breakdown-meter-fill').forEach((bar, index) => {
+          window.setTimeout(() => bar.classList.add('breakdown-animate'), 260 + index * 100);
+        });
+      });
+    }
+
     function renderSummaryPanel() {
       const existing = document.getElementById('summary-panel');
       if (existing) existing.remove();
@@ -5418,7 +6125,7 @@
       const scoreColor = passed ? 'var(--color-success)' : 'var(--color-danger)';
       panel.innerHTML = `
         <div class="summary-hero">
-          <div class="score-ring" style="--score-fill:${pctValue}%; --score-color:${scoreColor};" aria-label="Score ${pct}%">
+          <div class="score-ring" data-score-fill="${pctValue}" style="--score-fill:0%; --score-color:${scoreColor};" aria-label="Score ${pct}%">
             <div class="score-ring-inner">
               <span class="summary-score">${earned} / ${total}</span>
               <span class="summary-pct">${pct}%</span>
@@ -5478,6 +6185,7 @@
 
       const container = document.getElementById('questions-container');
       container.parentNode.insertBefore(panel, container);
+      animateSummaryPanel(panel, pctValue);
 
       document.getElementById('retake-btn-summary').addEventListener('click', () => {
         openConfirmModal({
@@ -5593,13 +6301,43 @@
     ===================================================== */
     function showResumeScreen(savedState) {
       Object.assign(examState, savedState);
-      const answeredCount = Object.keys(examState.answers).length;
+      const answeredCount = examState.questions.filter(isQuestionAnswered).length;
+      const totalQuestions = examState.questions.length || 0;
+      const answeredPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+      const flaggedCount = getFlaggedCount();
+      const timeLeft = Number(examState.remainingTime);
+      const remainingLabel = Number.isFinite(timeLeft) ? formatDuration(timeLeft) : formatDuration(EXAM_CONFIG.timerSeconds);
       const container = document.getElementById('questions-container');
       const resumeDiv = document.createElement('div');
       resumeDiv.id = 'resume-screen';
+      resumeDiv.dataset.code = EXAM_CONFIG.subjectCode;
       resumeDiv.innerHTML = `
-        <h2>📋 Resume Exam?</h2>
-        <p>You have a saved session with ${answeredCount} answer(s). Would you like to continue where you left off?</p>
+        <div class="resume-header">
+          <div>
+            <h2>Resume Exam?</h2>
+            <p>Your saved ${escapeHTML(EXAM_CONFIG.subjectCode)} attempt is ready to continue.</p>
+          </div>
+          <div class="resume-ring" style="--resume-progress:${answeredPct}%;" aria-hidden="true">
+            <div class="resume-ring-inner">
+              <span class="resume-ring-value">${answeredPct}%</span>
+              <span class="resume-ring-label">answered</span>
+            </div>
+          </div>
+        </div>
+        <div class="resume-stat-grid" aria-label="Saved progress summary">
+          <div class="resume-stat">
+            <span class="resume-stat-label">Answered</span>
+            <span class="resume-stat-value">${answeredCount} / ${totalQuestions}</span>
+          </div>
+          <div class="resume-stat">
+            <span class="resume-stat-label">Flagged</span>
+            <span class="resume-stat-value">${flaggedCount}</span>
+          </div>
+          <div class="resume-stat">
+            <span class="resume-stat-label">Time Left</span>
+            <span class="resume-stat-value">${remainingLabel}</span>
+          </div>
+        </div>
         <div class="resume-actions">
           <button class="resume-btn" id="resume-btn">Resume Exam</button>
           <button class="fresh-btn" id="fresh-btn">Start Fresh</button>
@@ -5675,7 +6413,7 @@
           card.classList.remove('filter-pop');
           requestAnimationFrame(() => {
             card.classList.add('filter-pop');
-            setTimeout(() => card.classList.remove('filter-pop'), 260);
+            setTimeout(() => card.classList.remove('filter-pop'), 180);
           });
         }
       });
@@ -5714,13 +6452,51 @@
       return best;
     }
 
+    function markActiveQuestionCard(card) {
+      if (!card) return;
+      const qId = card.dataset.questionId;
+      document.querySelectorAll('.question-card').forEach(c =>
+        c.classList.toggle('is-active', c.dataset.questionId === String(qId))
+      );
+      document.querySelectorAll('.nav-cell').forEach(c =>
+        c.classList.toggle('nav-active', c.dataset.questionId === String(qId))
+      );
+      const type = card.dataset.type;
+      document.querySelectorAll('.section-pill, .section-jump-chip').forEach(p =>
+        p.classList.toggle('pill-active', p.dataset.type === type)
+      );
+    }
+
+    function updateAutoAdvanceButton() {
+      const btn = document.getElementById('auto-advance-toggle');
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', autoAdvanceEnabled ? 'true' : 'false');
+      btn.textContent = autoAdvanceEnabled ? 'Auto-advance On' : 'Auto-advance Off';
+      btn.setAttribute('aria-label', `Auto-advance ${autoAdvanceEnabled ? 'enabled' : 'disabled'}`);
+    }
+
+    function scheduleAutoAdvance(questionId) {
+      window.clearTimeout(autoAdvanceTimer);
+      if (!autoAdvanceEnabled || examState.submitted) return;
+      autoAdvanceTimer = window.setTimeout(() => {
+        const cards = getVisibleQuestionCards();
+        const current = document.getElementById(`card-${questionId}`);
+        const currentIndex = cards.indexOf(current);
+        if (currentIndex === -1 || currentIndex >= cards.length - 1) return;
+        const nextCard = cards[currentIndex + 1];
+        markActiveQuestionCard(nextCard);
+        smoothScrollToCard(nextCard, 135);
+      }, 240);
+    }
+
     function scrollRelativeQuestion(direction) {
       const cards = getVisibleQuestionCards();
       if (cards.length === 0) return;
       const active = getActiveQuestionCard();
       const currentIndex = Math.max(0, cards.indexOf(active));
       const nextIndex = Math.min(cards.length - 1, Math.max(0, currentIndex + direction));
-      smoothScrollToCard(cards[nextIndex]);
+      markActiveQuestionCard(cards[nextIndex]);
+      smoothScrollToCard(cards[nextIndex], 165);
     }
 
     function focusQuestionSearch() {
@@ -5729,7 +6505,7 @@
       const toolbar = document.getElementById('filter-toolbar');
       if (toolbar) {
         const targetTop = Math.max(0, toolbar.getBoundingClientRect().top + window.scrollY - 64);
-        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        fastScrollTo(targetTop, 160);
       }
       requestAnimationFrame(() => searchInput.focus());
     }
@@ -5742,7 +6518,9 @@
       const matches = getVisibleQuestionCards();
       if (matches.length === 0) return;
       activeSearchIndex = (activeSearchIndex + direction + matches.length) % matches.length;
-      smoothScrollToCard(matches[activeSearchIndex]);
+      updateSearchUI(matches.length);
+      markActiveQuestionCard(matches[activeSearchIndex]);
+      smoothScrollToCard(matches[activeSearchIndex], 165);
     }
 
     function handleMobileSubmitAction() {
@@ -5760,8 +6538,8 @@
       const hasVisibleCards = getVisibleQuestionCards().length > 0;
       if (submitBtn) {
         submitBtn.innerHTML = examState.submitted
-          ? '<span class="mobile-btn-icon">=</span><span>Summary</span>'
-          : '<span class="mobile-btn-icon">!</span><span>Submit</span>';
+          ? '<span class="mobile-btn-icon">◎</span><span>Summary</span>'
+          : '<span class="mobile-btn-icon">✓</span><span>Submit</span>';
         submitBtn.setAttribute('aria-label', examState.submitted ? 'Back to summary' : 'Submit exam');
       }
       [prevBtn, nextBtn].forEach(btn => {
@@ -5779,12 +6557,25 @@
     }
 
     function handleKeyboardShortcuts(event) {
-      if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return;
+      if (event.defaultPrevented) return;
+      if ((event.ctrlKey || event.metaKey) && event.key === '/') {
+        if (!document.querySelector('.modal-backdrop.open') && !document.getElementById('drawer')?.classList.contains('open')) {
+          openShortcutModal();
+        }
+        event.preventDefault();
+        return;
+      }
+      if (event.ctrlKey || event.altKey || event.metaKey) return;
       const target = event.target;
       if (target && (target.matches('input, textarea, select, button') || target.isContentEditable)) return;
       if (document.querySelector('.modal-backdrop.open') || document.getElementById('drawer')?.classList.contains('open')) return;
 
       const key = event.key.toLowerCase();
+      if (key === '?') {
+        openShortcutModal();
+        event.preventDefault();
+        return;
+      }
       if (/^[1-4]$/.test(key)) {
         selectChoiceByShortcut(Number(key) - 1);
         event.preventDefault();
@@ -5814,6 +6605,7 @@
     ===================================================== */
     function retakeExam() {
       clearInterval(timerInterval);
+      window.clearTimeout(autoAdvanceTimer);
       try { localStorage.removeItem(DERIVED_KEY); } catch(e) {}
       Object.assign(examState, {
         answers: {}, flagged: {}, currentStreak: 0, longestStreak: 0,
@@ -5837,9 +6629,14 @@
       [document.getElementById('jump-unanswered-btn'), document.getElementById('jump-unanswered-btn-drawer')]
         .forEach(btn => { if (btn) btn.style.display = ''; });
       document.getElementById('floating-back-top').style.display = 'none';
-      document.getElementById('timer-display').textContent = '--:--';
-      const timerDrain = document.getElementById('timer-drain-fill');
-      if (timerDrain) timerDrain.style.width = '100%';
+      const resetTimerDisplay = document.getElementById('timer-display');
+      resetTimerDisplay.textContent = '--:--';
+      resetTimerDisplay.removeAttribute('title');
+      const timerRing = document.querySelector('.timer-ring-fill');
+      if (timerRing) {
+        timerRing.style.strokeDashoffset = 0;
+        timerRing.classList.remove('timer-drain-warning', 'timer-drain-danger', 'timer-ring-submitted');
+      }
       applyFilter('all');
 
       initExam();
@@ -5863,8 +6660,16 @@
       const themeBtn = document.getElementById('theme-toggle-btn');
       themeBtn.addEventListener('click', () => {
         const nextTheme = document.body.classList.contains('light') ? 'dark' : 'light';
-        applyTheme(nextTheme, true);
+        applyTheme(nextTheme, true, themeBtn);
       });
+
+      document.getElementById('shortcut-help-btn')?.addEventListener('click', openShortcutModal);
+      document.getElementById('auto-advance-toggle')?.addEventListener('click', () => {
+        autoAdvanceEnabled = !autoAdvanceEnabled;
+        updateAutoAdvanceButton();
+        showToast(`Auto-advance ${autoAdvanceEnabled ? 'enabled' : 'disabled'}.`);
+      });
+      updateAutoAdvanceButton();
 
       const searchInput = document.getElementById('question-search-input');
       const searchClear = document.getElementById('question-search-clear');
@@ -6012,9 +6817,15 @@
         renderSummaryPanel();
         buildNavigator();
         clearInterval(timerInterval);
-        document.getElementById('timer-display').textContent = 'Submitted';
-        const timerDrain = document.getElementById('timer-drain-fill');
-        if (timerDrain) timerDrain.style.width = '0%';
+        const submittedTimer = document.getElementById('timer-display');
+        submittedTimer.textContent = 'Done';
+        submittedTimer.title = 'Submitted';
+        const timerRing = document.querySelector('.timer-ring-fill');
+        if (timerRing) {
+          timerRing.style.strokeDashoffset = 138.23;
+          timerRing.classList.remove('timer-drain-warning', 'timer-drain-danger');
+          timerRing.classList.add('timer-ring-submitted');
+        }
         setPostSubmitControlsVisible(true);
         document.getElementById('jump-submit-btn').style.display = 'none';
         [document.getElementById('jump-unanswered-btn'), document.getElementById('jump-unanswered-btn-drawer')]
