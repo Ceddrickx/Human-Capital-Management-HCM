@@ -385,10 +385,12 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-      position: relative;
+      position: sticky;
+      top: 62px;
       z-index: 198;
       background: rgba(30,41,59,0.92);
       border-bottom: 1px solid var(--color-border);
+      box-shadow: 0 10px 24px rgba(2, 6, 23, 0.18);
       backdrop-filter: blur(14px);
     }
     body.light #filter-toolbar { background: rgba(255,255,255,0.92); }
@@ -444,10 +446,11 @@
     .filter-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
     .filter-btn[data-filter="flagged"],
     .filter-btn[data-filter="unanswered"] {
-      background: rgba(245,166,35,0.1);
-      border-color: rgba(245,166,35,0.38);
+      background: linear-gradient(180deg, rgba(245,166,35,0.13), rgba(245,166,35,0.06));
+      border-color: rgba(245,166,35,0.44);
       color: var(--color-accent);
       font-weight: 800;
+      box-shadow: inset 0 0 0 1px rgba(245,166,35,0.05);
     }
     .filter-btn[data-filter="flagged"]:hover,
     .filter-btn[data-filter="unanswered"]:hover {
@@ -712,13 +715,19 @@
       background: var(--color-accent);
       border: none;
       border-radius: var(--radius-btn);
-      padding: 6px 14px;
+      min-height: 38px;
+      padding: 8px 18px;
       font-size: 0.82rem;
-      font-weight: 600;
+      font-weight: 900;
       color: #fff;
-      transition: background 0.2s;
+      box-shadow: 0 4px 14px rgba(245,158,11,0.32);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
     }
-    #jump-submit-btn:hover { background: var(--color-accent-hover); }
+    #jump-submit-btn:hover {
+      background: var(--color-accent-hover);
+      box-shadow: 0 8px 20px rgba(245,158,11,0.38);
+      transform: translateY(-1px);
+    }
     #jump-submit-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     /* =====================================================
@@ -921,7 +930,16 @@
       box-shadow: 0 0 0 1px rgba(79, 127, 255, 0.12), var(--shadow-strong);
     }
     .question-card.is-active {
-      box-shadow: inset 4px 0 0 var(--color-primary), var(--shadow-strong);
+      background:
+        linear-gradient(90deg, rgba(79,127,255,0.12), transparent 38%),
+        var(--color-card);
+      border-color: rgba(79,127,255,0.48);
+      box-shadow: inset 6px 0 0 var(--color-primary), 0 0 0 1px rgba(79,127,255,0.18), var(--shadow-strong);
+    }
+    body.light .question-card.is-active {
+      background:
+        linear-gradient(90deg, rgba(59,111,244,0.10), transparent 40%),
+        var(--color-card);
     }
     .question-card.filter-pop { animation: filterIn 0.14s ease both; }
     .question-card.jump-highlight { animation: jumpGlow 0.42s ease; }
@@ -950,14 +968,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 24px;
-      padding: 3px 9px;
+      min-height: 28px;
+      padding: 5px 12px;
       border-radius: 999px;
       background: var(--color-primary);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 6px 16px rgba(79,131,204,0.24);
-      font-size: 0.76rem;
+      box-shadow: 0 0 0 3px rgba(79,127,255,0.20), 0 8px 18px rgba(79,131,204,0.28);
+      font-size: 0.78rem;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
@@ -1027,11 +1045,11 @@
     .flag-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     .question-text {
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-size: 1.12rem;
+      font-weight: 800;
       color: var(--color-text-primary);
-      margin-bottom: 14px;
-      line-height: 1.62;
+      margin-bottom: 16px;
+      line-height: 1.58;
       overflow-wrap: break-word;
     }
 
@@ -1043,20 +1061,21 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 9px;
       min-width: 0;
     }
     .choice-label {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-btn);
-      padding: 10px 12px;
+      padding: 14px 16px;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
-      min-height: 44px;
-      font-size: 0.92rem;
+      min-height: 52px;
+      font-size: 0.9rem;
+      font-weight: 500;
       background: var(--color-choice-bg);
     }
     .choice-label:hover { border-color: var(--color-primary); background: rgba(79,131,204,0.06); }
@@ -1095,10 +1114,31 @@
       height: 26px;
       border-radius: 6px;
       border: 1px solid var(--color-border);
-      color: var(--color-accent);
-      background: rgba(245,166,35,0.08);
-      font-weight: 700;
+      color: var(--choice-letter-color, var(--color-accent));
+      background: var(--choice-letter-bg, rgba(245,166,35,0.08));
+      border-color: var(--choice-letter-border, var(--color-border));
+      font-weight: 900;
       line-height: 1;
+    }
+    .choice-label:has(.choice-letter[data-letter="A"]) {
+      --choice-letter-color: #7aa7ff;
+      --choice-letter-bg: rgba(79,127,255,0.14);
+      --choice-letter-border: rgba(79,127,255,0.34);
+    }
+    .choice-label:has(.choice-letter[data-letter="B"]) {
+      --choice-letter-color: #b794ff;
+      --choice-letter-bg: rgba(139,92,246,0.15);
+      --choice-letter-border: rgba(139,92,246,0.36);
+    }
+    .choice-label:has(.choice-letter[data-letter="C"]) {
+      --choice-letter-color: #4dd7c4;
+      --choice-letter-bg: rgba(20,184,166,0.15);
+      --choice-letter-border: rgba(20,184,166,0.36);
+    }
+    .choice-label:has(.choice-letter[data-letter="D"]) {
+      --choice-letter-color: #f7b64b;
+      --choice-letter-bg: rgba(245,158,11,0.16);
+      --choice-letter-border: rgba(245,158,11,0.40);
     }
     .choice-body {
       min-width: 0;
@@ -1291,12 +1331,26 @@
 
     .nav-header-label {
       font-family: var(--font-heading);
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.82rem;
+      font-weight: 900;
       color: var(--color-text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-header-label::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+      box-shadow: 0 0 0 3px rgba(79,127,255,0.14);
+    }
+    .nav-header-label .nav-header-accent {
+      color: var(--color-primary);
     }
     .section-pills {
       display: grid;
@@ -1336,27 +1390,50 @@
     #jump-unanswered-btn:disabled { opacity: 0.5; cursor: default; }
     #jump-unanswered-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
-    #reset-flags-btn {
+    #reset-flags-btn,
+    #reset-flags-btn-drawer {
       width: 100%;
-      background: rgba(245,166,35,0.1);
-      border: 1px solid rgba(245,166,35,0.38);
+      background: transparent;
+      border: 1px solid rgba(245,166,35,0.24);
       border-radius: var(--radius-btn);
       padding: 9px 12px;
       font-size: 0.8rem;
       font-weight: 800;
-      color: var(--color-accent);
+      color: color-mix(in srgb, var(--color-accent) 62%, var(--color-text-secondary));
       margin-bottom: 10px;
       text-align: center;
       transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
     }
-    #reset-flags-btn:hover {
+    #reset-flags-btn.has-flags,
+    #reset-flags-btn-drawer.has-flags {
+      background: rgba(245,166,35,0.12);
+      border-color: rgba(245,166,35,0.50);
+      color: var(--color-accent);
+      box-shadow: inset 0 0 0 1px rgba(245,166,35,0.08);
+    }
+    #reset-flags-btn:disabled,
+    #reset-flags-btn-drawer:disabled {
+      cursor: default;
+      opacity: 0.72;
+    }
+    #reset-flags-btn:disabled:hover,
+    #reset-flags-btn-drawer:disabled:hover {
+      background: transparent;
+      border-color: rgba(245,166,35,0.24);
+      color: color-mix(in srgb, var(--color-accent) 62%, var(--color-text-secondary));
+      transform: none;
+    }
+    #reset-flags-btn:hover,
+    #reset-flags-btn-drawer:hover {
       background: var(--color-accent);
       border-color: var(--color-accent);
       color: #0f172a;
       transform: translateY(-1px);
     }
-    #reset-flags-btn:active { transform: translateY(0); }
-    #reset-flags-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    #reset-flags-btn:active,
+    #reset-flags-btn-drawer:active { transform: translateY(0); }
+    #reset-flags-btn:focus-visible,
+    #reset-flags-btn-drawer:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
     #nav-answered-count {
       font-size: 0.78rem;
@@ -1398,8 +1475,8 @@
     }
     .nav-section-cells {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+      gap: 7px;
     }
     #drawer .nav-section-cells {
       grid-template-columns: repeat(5, 1fr);
@@ -1408,21 +1485,25 @@
       aspect-ratio: 1;
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 800;
+      font-size: 0.84rem;
+      font-weight: 900;
       background: rgba(255, 255, 255, 0.04);
       color: #6b7eaa;
       cursor: pointer;
       transition: transform 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
       display: flex; align-items: center; justify-content: center;
       position: relative;
-      min-height: 40px;
+      min-height: 42px;
     }
     .nav-cell:hover {
       transform: scale(1.1);
       border-color: rgba(79, 127, 255, 0.4);
     }
-    .nav-cell.nav-active { outline: 2px solid var(--color-primary); }
+    .nav-cell.nav-active {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(79,127,255,0.14);
+    }
     .nav-cell.answered  { background: rgba(79, 127, 255, 0.28); color: #93b4ff; border-color: rgba(79, 127, 255, 0.50); }
     .nav-cell.flagged   { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.50); }
     .nav-cell.flagged::after {
@@ -1637,11 +1718,15 @@
       .filter-label { display: none; }
       .filter-btn,
       .review-summary-btn,
-      .review-retake-btn,
-      #jump-submit-btn {
+      .review-retake-btn {
         min-height: 30px;
         padding: 5px 9px;
         font-size: 0.74rem;
+      }
+      #jump-submit-btn {
+        min-height: 34px;
+        padding: 6px 12px;
+        font-size: 0.76rem;
       }
       .toolbar-spacer { display: none; }
       .status-pill {
@@ -1686,17 +1771,17 @@
         min-height: 36px;
       }
       .question-text {
-        font-size: 0.95rem;
+        font-size: 1rem;
         line-height: 1.55;
         margin-bottom: 14px;
         overflow-wrap: anywhere;
       }
-      .choice-group { gap: 7px; }
+      .choice-group { gap: 8px; }
       .choice-label {
         align-items: flex-start;
-        gap: 8px;
-        min-height: 44px;
-        padding: 9px 10px;
+        gap: 10px;
+        min-height: 48px;
+        padding: 11px 12px;
         font-size: 0.88rem;
         line-height: 1.45;
       }
@@ -2122,6 +2207,17 @@
         transition-duration: 0.001ms !important;
         scroll-behavior: auto !important;
       }
+      #gm-canvas,
+      .gm-stars,
+      .gm-aurora,
+      .gm-grain,
+      .gm-scanline,
+      .gm-pulse-dot {
+        animation: none !important;
+      }
+      #gm-canvas {
+        display: none !important;
+      }
     }
 
     /* =====================================================
@@ -2538,9 +2634,207 @@
       gap: 4px 16px;
       justify-content: center;
     }
+
+    /* =====================================================
+       GOD MODE BACKGROUND SYSTEM
+       Decorative, isolated, and performance-aware.
+    ===================================================== */
+    body,
+    body.light {
+      background-image: none !important;
+    }
+    body {
+      background-color: #06091a !important;
+      isolation: isolate;
+    }
+    body.light {
+      background-color: #f0f4ff !important;
+    }
+    #gm-background {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      contain: paint;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(79,127,255,0.08), transparent 42%),
+        linear-gradient(90deg, rgba(79,127,255,0.10), transparent 18%, transparent 82%, rgba(245,166,35,0.08));
+    }
+    body.light #gm-background {
+      opacity: 0.72;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(59,111,244,0.12), transparent 46%),
+        linear-gradient(90deg, rgba(37,99,235,0.08), transparent 20%, transparent 82%, rgba(245,166,35,0.08));
+    }
+    #gm-canvas,
+    .gm-stars,
+    .gm-aurora,
+    .gm-grain,
+    .gm-scanline,
+    .gm-vignette,
+    .gm-pulse-edge {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    #gm-canvas {
+      width: 100%;
+      height: 100%;
+      opacity: 0.82;
+    }
+    .gm-stars {
+      overflow: hidden;
+    }
+    .gm-star {
+      position: absolute;
+      border-radius: 999px;
+      background: #fff;
+      opacity: 0.35;
+      animation: gmStarTwinkle var(--gm-star-speed, 4s) ease-in-out infinite;
+      animation-delay: var(--gm-star-delay, 0s);
+      box-shadow: 0 0 var(--gm-star-glow, 5px) rgba(130,165,255,0.52);
+      transform: translateZ(0);
+    }
+    .gm-aurora {
+      opacity: 0.5;
+      mix-blend-mode: screen;
+      filter: saturate(1.25);
+      transform: translate3d(var(--gm-parallax-x, 0), var(--gm-parallax-y, 0), 0);
+      transition: transform 0.12s linear;
+      background:
+        linear-gradient(115deg, transparent 0 16%, rgba(79,127,255,0.26) 26%, transparent 42%),
+        linear-gradient(65deg, transparent 0 30%, rgba(16,185,129,0.18) 42%, transparent 58%),
+        conic-gradient(from 220deg at 70% 15%, transparent 0 18%, rgba(139,92,246,0.20) 28%, transparent 42% 100%),
+        conic-gradient(from 40deg at 18% 84%, transparent 0 22%, rgba(245,166,35,0.12) 34%, transparent 52% 100%);
+      animation: gmAuroraDrift 24s ease-in-out infinite alternate, gmHueBreath 22s ease-in-out infinite;
+    }
+    .gm-grain {
+      inset: -45%;
+      width: 190%;
+      height: 190%;
+      opacity: 0.024;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      animation: gmGrainShift 0.45s steps(2) infinite;
+    }
+    .gm-scanline {
+      opacity: 0.34;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(79,127,255,0.018) 3px,
+        rgba(79,127,255,0.018) 4px
+      );
+      animation: gmScanMove 16s linear infinite;
+    }
+    .gm-vignette {
+      background:
+        radial-gradient(ellipse 78% 68% at 50% 48%, transparent 42%, rgba(4,7,20,0.62) 100%),
+        linear-gradient(90deg, rgba(4,7,20,0.34), transparent 18%, transparent 82%, rgba(4,7,20,0.34));
+    }
+    body.light .gm-vignette {
+      background:
+        radial-gradient(ellipse 78% 68% at 50% 48%, transparent 42%, rgba(190,205,245,0.42) 100%),
+        linear-gradient(90deg, rgba(190,205,245,0.22), transparent 18%, transparent 82%, rgba(190,205,245,0.22));
+    }
+    body.light .gm-stars {
+      opacity: 0.18;
+    }
+    body.light #gm-canvas {
+      opacity: 0.36;
+    }
+    body.light .gm-aurora {
+      opacity: 0.28;
+      mix-blend-mode: multiply;
+    }
+    body.light .gm-grain {
+      opacity: 0.011;
+    }
+    .gm-pulse-edge {
+      width: 1px;
+      inset: 0 auto 0 auto;
+      overflow: hidden;
+      opacity: 0.78;
+    }
+    .gm-pulse-edge.left { left: 30px; }
+    .gm-pulse-edge.right { right: 30px; }
+    .gm-pulse-dot {
+      position: absolute;
+      left: 0;
+      width: 1px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, transparent, rgba(79,127,255,0.9), transparent);
+      box-shadow: 0 0 12px rgba(79,127,255,0.5);
+      animation: gmPulseDrop var(--gm-pulse-speed, 8s) linear infinite;
+      animation-delay: var(--gm-pulse-delay, 0s);
+    }
+    #main-layout,
+    #site-footer {
+      position: relative;
+      z-index: 5;
+    }
+    #top-bar { z-index: 200; }
+    #progress-bar-track { z-index: 199; }
+    #filter-toolbar { z-index: 198; }
+    #drawer,
+    #drawer-backdrop,
+    .modal-backdrop {
+      z-index: 1000;
+    }
+    @keyframes gmStarTwinkle {
+      0%, 100% { opacity: var(--gm-star-min, 0.12); transform: scale(1); }
+      50% { opacity: var(--gm-star-max, 0.84); transform: scale(var(--gm-star-scale, 1.4)); }
+    }
+    @keyframes gmAuroraDrift {
+      0% { background-position: 0% 0%, 100% 0%, 50% 50%, 50% 50%; }
+      100% { background-position: 18% 8%, 86% 16%, 42% 58%, 62% 42%; }
+    }
+    @keyframes gmHueBreath {
+      0%, 100% { filter: saturate(1.25) hue-rotate(-8deg); }
+      50% { filter: saturate(1.45) hue-rotate(14deg); }
+    }
+    @keyframes gmGrainShift {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-2%, 1%, 0); }
+      50% { transform: translate3d(2%, -2%, 0); }
+      75% { transform: translate3d(-1%, -1%, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+    @keyframes gmScanMove {
+      from { background-position: 0 0; }
+      to { background-position: 0 900px; }
+    }
+    @keyframes gmPulseDrop {
+      0% { top: -90px; opacity: 0; }
+      8% { opacity: 1; }
+      92% { opacity: 0.65; }
+      100% { top: 110%; opacity: 0; }
+    }
+    @media (max-width: 767px) {
+      .gm-grain,
+      .gm-scanline {
+        opacity: 0.012;
+      }
+      .gm-pulse-edge.left { left: 12px; }
+      .gm-pulse-edge.right { right: 12px; }
+    }
   </style>
 </head>
 <body class="dark">
+
+  <!-- GOD MODE BACKGROUND LAYERS (decorative only) -->
+  <div id="gm-background" aria-hidden="true">
+    <div class="gm-stars" id="gm-stars"></div>
+    <div class="gm-aurora"></div>
+    <canvas id="gm-canvas"></canvas>
+    <div class="gm-grain"></div>
+    <div class="gm-scanline"></div>
+    <div class="gm-vignette"></div>
+    <div class="gm-pulse-edge left" id="gm-pulse-left"></div>
+    <div class="gm-pulse-edge right" id="gm-pulse-right"></div>
+  </div>
 
   <!-- SKIP LINK -->
   <a href="#questions-container" class="skip-link">Skip to questions</a>
@@ -2661,7 +2955,7 @@
 
     <!-- NAVIGATOR SIDEBAR (desktop) -->
     <aside id="navigator" aria-label="Question navigator">
-      <div class="nav-header-label">Question Navigator</div>
+      <div class="nav-header-label"><span>Question <span class="nav-header-accent">Navigator</span></span></div>
       <div class="section-pills" id="nav-pills-desktop"></div>
       <button id="jump-unanswered-btn" aria-label="Jump to first unanswered question">First Unanswered</button>
       <button id="reset-flags-btn" aria-label="Reset all flags">Reset Flags</button>
@@ -2692,7 +2986,7 @@
   <div id="drawer" role="dialog" aria-label="Question navigator drawer" aria-modal="true" tabindex="-1">
     <button id="drawer-close-btn" aria-label="Close navigator">x</button>
     <div class="drawer-nav-content">
-      <div class="nav-header-label">Question Navigator</div>
+      <div class="nav-header-label"><span>Question <span class="nav-header-accent">Navigator</span></span></div>
       <div class="section-pills" id="nav-pills-drawer"></div>
       <button id="jump-unanswered-btn-drawer" aria-label="Jump to first unanswered question">First Unanswered</button>
       <button id="reset-flags-btn-drawer" aria-label="Reset all flags">Reset Flags</button>
@@ -2768,6 +3062,279 @@
   </footer>
 
   <script>
+    /* =====================================================
+       GOD MODE BACKGROUND ENGINE
+       Decorative only. Does not touch exam state or answers.
+    ===================================================== */
+    (function initGodModeBackground() {
+      if (window.__gmBackgroundStarted) return;
+      window.__gmBackgroundStarted = true;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const isSmallScreen = () => window.innerWidth < 768;
+      const lowPower = () => (navigator.hardwareConcurrency || 8) <= 4 || isSmallScreen();
+
+      function buildStars() {
+        const container = document.getElementById('gm-stars');
+        if (!container || container.childElementCount) return;
+        const count = lowPower() ? 70 : 170;
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < count; i++) {
+          const star = document.createElement('span');
+          star.className = 'gm-star';
+          const tier = Math.random();
+          const size = tier > 0.92 ? Math.random() * 1.6 + 1.8 : tier > 0.68 ? Math.random() * 1.1 + 0.9 : Math.random() * 0.7 + 0.45;
+          star.style.cssText = `
+            left:${Math.random() * 100}%;
+            top:${Math.random() * 100}%;
+            width:${size}px;
+            height:${size}px;
+            --gm-star-min:${tier > 0.92 ? 0.20 : 0.08};
+            --gm-star-max:${tier > 0.92 ? 0.92 : 0.62};
+            --gm-star-scale:${tier > 0.92 ? 1.8 : 1.35};
+            --gm-star-glow:${Math.max(4, size * 4)}px;
+            --gm-star-speed:${Math.random() * 4 + 2.8}s;
+            --gm-star-delay:${Math.random() * 7}s;
+          `;
+          fragment.appendChild(star);
+        }
+
+        container.appendChild(fragment);
+      }
+
+      function buildPulseEdges() {
+        const colors = [
+          'rgba(79,127,255,0.95)',
+          'rgba(139,92,246,0.85)',
+          'rgba(16,185,129,0.8)',
+          'rgba(245,158,11,0.72)',
+          'rgba(6,182,212,0.78)'
+        ];
+        ['gm-pulse-left', 'gm-pulse-right'].forEach(id => {
+          const edge = document.getElementById(id);
+          if (!edge || edge.childElementCount) return;
+          const count = lowPower() ? 3 : 5;
+          for (let i = 0; i < count; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'gm-pulse-dot';
+            const color = colors[i % colors.length];
+            dot.style.cssText = `
+              height:${Math.random() * 54 + 42}px;
+              background:linear-gradient(180deg, transparent, ${color}, transparent);
+              --gm-pulse-speed:${Math.random() * 6 + 6}s;
+              --gm-pulse-delay:${Math.random() * 9}s;
+            `;
+            edge.appendChild(dot);
+          }
+        });
+      }
+
+      function initParallax() {
+        if (reducedMotion.matches) return;
+        const bg = document.getElementById('gm-background');
+        if (!bg) return;
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+
+        window.addEventListener('pointermove', event => {
+          targetX = (event.clientX - window.innerWidth / 2) * 0.018;
+          targetY = (event.clientY - window.innerHeight / 2) * 0.018;
+        }, { passive: true });
+
+        function tick() {
+          currentX += (targetX - currentX) * 0.055;
+          currentY += (targetY - currentY) * 0.055;
+          bg.style.setProperty('--gm-parallax-x', `${currentX.toFixed(2)}px`);
+          bg.style.setProperty('--gm-parallax-y', `${currentY.toFixed(2)}px`);
+          requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      function initCanvas() {
+        const canvas = document.getElementById('gm-canvas');
+        if (!canvas || reducedMotion.matches) return;
+        const ctx = canvas.getContext('2d', { alpha: true });
+        if (!ctx) return;
+
+        const colors = [
+          [79, 127, 255],
+          [139, 92, 246],
+          [16, 185, 129],
+          [245, 158, 11],
+          [6, 182, 212]
+        ];
+        const particles = [];
+        const shootingStars = [];
+        let width = 0;
+        let height = 0;
+        let dpr = 1;
+        let rafId = 0;
+        let nextShot = 0;
+        let mouseX = -9999;
+        let mouseY = -9999;
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, lowPower() ? 1.1 : 1.5);
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = Math.floor(width * dpr);
+          canvas.height = Math.floor(height * dpr);
+          canvas.style.width = `${width}px`;
+          canvas.style.height = `${height}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          seedParticles();
+        }
+
+        function seedParticles() {
+          const target = lowPower() ? 18 : 42;
+          while (particles.length > target) particles.pop();
+          while (particles.length < target) {
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particles.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              vx: (Math.random() - 0.5) * 0.25,
+              vy: (Math.random() - 0.5) * 0.25,
+              r: Math.random() * 1.4 + 0.7,
+              color,
+              phase: Math.random() * Math.PI * 2
+            });
+          }
+        }
+
+        function spawnShootingStar(now) {
+          const angle = (Math.random() * 28 + 22) * Math.PI / 180;
+          shootingStars.push({
+            x: Math.random() * width * 0.62,
+            y: Math.random() * height * 0.36,
+            vx: Math.cos(angle) * (Math.random() * 6 + 6),
+            vy: Math.sin(angle) * (Math.random() * 6 + 6),
+            length: Math.random() * 90 + 70,
+            opacity: 1,
+            lineWidth: Math.random() * 1.1 + 0.6
+          });
+          nextShot = now + Math.random() * 5200 + 3200;
+        }
+
+        function draw(now) {
+          rafId = requestAnimationFrame(draw);
+          if (document.hidden) return;
+          ctx.clearRect(0, 0, width, height);
+
+          if (now > nextShot && !lowPower()) spawnShootingStar(now);
+
+          const maxDist = lowPower() ? 112 : 150;
+          for (const p of particles) {
+            p.phase += 0.015;
+            const dxMouse = p.x - mouseX;
+            const dyMouse = p.y - mouseY;
+            const mouseDist = Math.hypot(dxMouse, dyMouse);
+            if (mouseDist > 0 && mouseDist < 105) {
+              const force = (105 - mouseDist) / 105;
+              p.vx += (dxMouse / mouseDist) * force * 0.045;
+              p.vy += (dyMouse / mouseDist) * force * 0.045;
+            }
+
+            p.vx *= 0.994;
+            p.vy *= 0.994;
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < -10) p.x = width + 10;
+            if (p.x > width + 10) p.x = -10;
+            if (p.y < -10) p.y = height + 10;
+            if (p.y > height + 10) p.y = -10;
+          }
+
+          for (let i = 0; i < particles.length; i++) {
+            const a = particles[i];
+            for (let j = i + 1; j < particles.length; j++) {
+              const b = particles[j];
+              const distance = Math.hypot(a.x - b.x, a.y - b.y);
+              if (distance > maxDist) continue;
+              const alpha = (1 - distance / maxDist) * 0.16;
+              const gradient = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+              gradient.addColorStop(0, `rgba(${a.color[0]},${a.color[1]},${a.color[2]},${alpha})`);
+              gradient.addColorStop(1, `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${alpha})`);
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = gradient;
+              ctx.lineWidth = 0.75;
+              ctx.stroke();
+            }
+          }
+
+          for (const p of particles) {
+            const radius = p.r + Math.sin(p.phase) * 0.32;
+            const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 4);
+            glow.addColorStop(0, `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0.72)`);
+            glow.addColorStop(1, `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0)`);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius * 4, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+          }
+
+          for (let i = shootingStars.length - 1; i >= 0; i--) {
+            const s = shootingStars[i];
+            s.x += s.vx;
+            s.y += s.vy;
+            s.opacity -= 0.019;
+            if (s.opacity <= 0 || s.x > width + 180 || s.y > height + 180) {
+              shootingStars.splice(i, 1);
+              continue;
+            }
+            const tailX = s.x - s.length;
+            const tailY = s.y - s.length * 0.48;
+            const trail = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+            trail.addColorStop(0, 'rgba(255,255,255,0)');
+            trail.addColorStop(0.75, `rgba(180,205,255,${s.opacity * 0.48})`);
+            trail.addColorStop(1, `rgba(255,255,255,${s.opacity})`);
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(s.x, s.y);
+            ctx.strokeStyle = trail;
+            ctx.lineWidth = s.lineWidth;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+          }
+        }
+
+        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('pointermove', event => {
+          mouseX = event.clientX;
+          mouseY = event.clientY;
+        }, { passive: true });
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) cancelAnimationFrame(rafId);
+          else rafId = requestAnimationFrame(draw);
+        });
+
+        resize();
+        nextShot = performance.now() + 2600;
+        rafId = requestAnimationFrame(draw);
+      }
+
+      function boot() {
+        buildStars();
+        buildPulseEdges();
+        initParallax();
+        initCanvas();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+
     /* =====================================================
        1. EXAM_CONFIG — SINGLE SOURCE OF TRUTH
     ===================================================== */
@@ -4723,6 +5290,18 @@
       return Object.keys(examState.flagged || {}).length;
     }
 
+    function updateResetFlagsState() {
+      const flaggedCount = getFlaggedCount();
+      ['reset-flags-btn', 'reset-flags-btn-drawer'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.classList.toggle('has-flags', flaggedCount > 0);
+        btn.disabled = flaggedCount === 0;
+        btn.setAttribute('aria-disabled', flaggedCount === 0 ? 'true' : 'false');
+        btn.textContent = flaggedCount > 0 ? `Reset Flags (${flaggedCount})` : 'Reset Flags';
+      });
+    }
+
     function setPostSubmitControlsVisible(visible) {
       document.querySelectorAll('.post-submit-only').forEach(el => {
         el.style.display = visible ? 'inline-flex' : 'none';
@@ -4869,6 +5448,7 @@
       if (badge) badge.textContent = `Q ${answered} / ${total}`;
       if (headerProgress) headerProgress.style.setProperty('--header-progress', `${pct}%`);
       if (headerProgressValue) headerProgressValue.textContent = `${Math.round(pct)}%`;
+      updateResetFlagsState();
 
       // Update nav answered count
       document.getElementById('nav-answered-count').textContent = `${answered} / ${total} answered`;
@@ -5600,6 +6180,7 @@
           if (parsedChoice.letter) {
             const letter = document.createElement('span');
             letter.className = 'choice-letter';
+            letter.dataset.letter = parsedChoice.letter.toUpperCase();
             letter.textContent = parsedChoice.letter;
             span.appendChild(mark);
             span.appendChild(letter);
