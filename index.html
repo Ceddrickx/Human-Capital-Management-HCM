@@ -335,7 +335,7 @@
       transform: translateY(-1px);
     }
     #shortcut-help-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       .top-bar-inner { padding: 0 12px; gap: 8px; }
       .top-bar-meta { display: none; }
       .timer-cluster { min-width: 52px; }
@@ -757,6 +757,39 @@
       #navigator { display: none; }
       .section-jump-row { display: flex; }
     }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .top-bar-meta { display: none; }
+      #filter-toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 10px;
+        padding: 10px 16px;
+      }
+      .filter-controls {
+        grid-column: 1;
+        grid-row: 1;
+        flex-wrap: wrap;
+      }
+      .status-controls {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: start;
+      }
+      .search-controls {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        max-width: none;
+      }
+      .toolbar-spacer,
+      .review-controls,
+      .section-jump-row {
+        display: none !important;
+      }
+      #jump-submit-btn {
+        min-height: 34px;
+        padding: 6px 12px;
+      }
+    }
 
     /* =====================================================
        EXAM INTRO HEADER
@@ -886,7 +919,7 @@
       color: var(--color-text-secondary);
       font-style: italic;
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       #exam-header { padding: 20px; }
       .exam-header-main { grid-template-columns: 1fr; }
       .exam-header-progress { width: 76px; }
@@ -924,6 +957,8 @@
       box-shadow: 0 0 0 1px rgba(79, 127, 255, 0.06), var(--shadow);
       transition: background-color 0.18s ease, border-color 0.16s, box-shadow 0.16s, transform 0.16s;
       scroll-margin-top: 210px;
+      content-visibility: auto;
+      contain-intrinsic-size: 380px;
     }
     .question-card:hover {
       border-color: rgba(79, 127, 255, 0.35);
@@ -1373,7 +1408,8 @@
     .section-pill.pill-active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
     .section-pill:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
-    #jump-unanswered-btn {
+    #jump-unanswered-btn,
+    #jump-unanswered-btn-drawer {
       width: 100%;
       background: transparent;
       border: 1px solid var(--color-border);
@@ -1386,9 +1422,12 @@
       text-align: left;
       transition: all 0.2s;
     }
-    #jump-unanswered-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
-    #jump-unanswered-btn:disabled { opacity: 0.5; cursor: default; }
-    #jump-unanswered-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    #jump-unanswered-btn:hover:not(:disabled),
+    #jump-unanswered-btn-drawer:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+    #jump-unanswered-btn:disabled,
+    #jump-unanswered-btn-drawer:disabled { opacity: 0.5; cursor: default; }
+    #jump-unanswered-btn:focus-visible,
+    #jump-unanswered-btn-drawer:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
     #reset-flags-btn,
     #reset-flags-btn-drawer {
@@ -1548,11 +1587,19 @@
       border-left: 1px solid var(--color-border);
       z-index: 301;
       transform: translateX(100%);
-      transition: transform 0.25s ease;
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform 0.25s ease, visibility 0s linear 0.25s;
       overflow-y: auto;
       padding: 16px;
+      overscroll-behavior: contain;
     }
-    #drawer.open { transform: translateX(0); }
+    #drawer.open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+      transition: transform 0.25s ease;
+    }
     #drawer-close-btn {
       background: transparent;
       border: 1px solid var(--color-border);
@@ -1578,13 +1625,24 @@
       background: var(--color-primary);
       color: #fff;
       border: none;
-      border-radius: 50%;
-      width: 48px; height: 48px;
-      font-size: 1.2rem;
+      border-radius: 14px;
+      width: 56px; height: 48px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
     }
-    #drawer-toggle:hover { background: var(--color-primary-hover); }
+    #drawer-toggle:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.28);
+    }
+    body.drawer-open #drawer-toggle {
+      background: var(--color-accent);
+      color: #0f172a;
+    }
     #drawer-toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
     #mobile-badge {
@@ -1666,27 +1724,68 @@
       transform: none;
     }
     .mobile-bottom-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (max-width: 767px), (pointer: coarse) {
+      #mobile-bottom-nav {
+        gap: 4px;
+        padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+        box-shadow: 0 -8px 18px rgba(0,0,0,0.20);
+      }
+      .mobile-bottom-btn {
+        min-height: 42px;
+        gap: 0;
+        border-radius: 7px;
+        font-size: 0.62rem;
+      }
+      .mobile-btn-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 0.72rem;
+      }
+      #mobile-nav-drawer {
+        border-color: rgba(79,127,255,0.38);
+      }
+      #mobile-nav-drawer .mobile-btn-icon {
+        font-size: 0.84rem;
+      }
+      body.drawer-open #mobile-nav-drawer {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: #fff;
+      }
+    }
 
     @media (max-width: 1023px) {
       #drawer-toggle { display: flex; align-items: center; justify-content: center; }
     }
-    @media (max-width: 767px) {
-      body { padding-bottom: 70px; }
+    @media (max-width: 767px), (pointer: coarse) {
+      body {
+        padding-bottom: calc(58px + env(safe-area-inset-bottom));
+        background: var(--color-bg) !important;
+      }
       #filter-toolbar {
-        padding: 8px 10px;
+        top: 52px;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 6px 10px;
         gap: 6px;
         align-items: center;
+        background: rgba(13,19,38,0.98);
+        box-shadow: none;
+        backdrop-filter: none;
       }
+      body.light #filter-toolbar { background: rgba(255,255,255,0.98); }
       #filter-menu-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        min-height: 34px;
+        padding: 5px 9px;
         order: 1;
       }
       .filter-controls {
         display: none;
         order: 5;
-        flex: 1 0 100%;
+        grid-column: 1 / -1;
         padding: 8px;
         border: 1px solid var(--color-border);
         border-radius: var(--radius-btn);
@@ -1700,19 +1799,25 @@
       .search-controls {
         flex: 1 1 auto;
         order: 2;
+        grid-column: 2;
         max-width: none;
+        min-height: 34px;
       }
       .review-controls {
-        order: 4;
+        display: none !important;
       }
       .status-controls {
-        order: 3;
-        margin-left: auto;
+        display: none !important;
       }
       .question-search {
         flex: 1 1 180px;
         max-width: none;
         min-width: 0;
+      }
+      #question-search-input {
+        min-height: 34px;
+        padding: 7px 34px 7px 10px;
+        font-size: 0.78rem;
       }
       .search-nav-btn { display: none; }
       .filter-label { display: none; }
@@ -1723,23 +1828,15 @@
         padding: 5px 9px;
         font-size: 0.74rem;
       }
-      #jump-submit-btn {
-        min-height: 34px;
-        padding: 6px 12px;
-        font-size: 0.76rem;
-      }
+      #jump-submit-btn { display: none !important; }
+      #auto-advance-toggle { display: none !important; }
       .toolbar-spacer { display: none; }
       .status-pill {
         padding: 4px 7px;
         font-size: 0.72rem;
       }
       #flagged-count { display: none; }
-      .section-jump-row {
-        flex: 1 0 100%;
-        padding-top: 6px;
-        gap: 6px;
-        overflow-x: auto;
-      }
+      .section-jump-row { display: none !important; }
       .section-jump-label { display: none; }
       .section-jump-chip {
         min-height: 30px;
@@ -1750,40 +1847,158 @@
       #mobile-badge,
       #drawer-toggle { display: none; }
       #mobile-bottom-nav { display: grid; }
-      #main-layout { padding: 12px 12px 24px; }
-      .question-card { padding: 14px; }
+      #drawer-backdrop {
+        background: rgba(2, 6, 23, 0.58);
+      }
+      #drawer {
+        top: 8px;
+        right: 8px;
+        left: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        width: auto;
+        height: auto;
+        max-height: calc(100dvh - 16px - env(safe-area-inset-bottom));
+        border: 1px solid var(--color-border);
+        border-radius: 14px;
+        padding: 14px;
+        transform: translateY(110%);
+        transition: transform 0.18s ease-out;
+        box-shadow: 0 18px 60px rgba(0,0,0,0.42);
+      }
+      #drawer.open { transform: translateY(0); }
+      #drawer-close-btn {
+        float: none;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        margin: 0 0 10px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+        padding: 0;
+        border-radius: 10px;
+        background: var(--color-card);
+      }
+      .drawer-nav-content {
+        clear: none;
+      }
+      #drawer .nav-header-label {
+        margin: -38px 50px 12px 0;
+        min-height: 40px;
+        font-size: 0.78rem;
+      }
+      #drawer .section-pills {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        margin-bottom: 12px;
+      }
+      #drawer .section-pill {
+        min-height: 34px;
+        padding: 6px 8px;
+        font-size: 0.72rem;
+      }
+      #jump-unanswered-btn-drawer,
+      #reset-flags-btn-drawer {
+        min-height: 38px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+        text-align: center;
+      }
+      #nav-answered-count-drawer {
+        margin: 8px 0 12px !important;
+        padding: 8px 10px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-btn);
+        background: var(--color-choice-bg);
+        font-weight: 700;
+      }
+      #drawer .nav-grid {
+        gap: 14px;
+        padding-bottom: 8px;
+      }
+      #drawer .nav-section-group {
+        gap: 8px;
+      }
+      #drawer .nav-section-title {
+        font-size: 0.74rem;
+      }
+      #drawer .nav-section-cells {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+      }
+      #drawer .nav-cell {
+        min-height: 48px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+        background: var(--color-choice-bg);
+        border-color: var(--color-border);
+        color: var(--color-text-secondary);
+      }
+      #drawer .nav-cell.nav-active {
+        color: var(--color-primary);
+      }
+      #drawer .nav-cell:hover {
+        transform: none;
+      }
+      #main-layout { padding: 8px 10px 16px; }
+      #questions-container { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+      #exam-header { display: none !important; }
+      .section-header {
+        margin: 10px 0 10px;
+        padding: 10px 0 8px 10px;
+        font-size: 0.74rem;
+        scroll-margin-top: 102px;
+      }
+      .question-card {
+        padding: 16px 14px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        scroll-margin-top: 104px;
+      }
       .card-header {
         gap: 8px;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
       .card-label { gap: 6px; }
       .question-number-badge {
-        min-height: 26px;
-        padding: 4px 9px;
-        font-size: 0.78rem;
+        min-height: 24px;
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        box-shadow: none;
       }
       .question-type-badge,
       .slide-ref {
-        font-size: 0.68rem;
+        min-height: 20px;
+        padding: 2px 6px;
+        font-size: 0.64rem;
       }
       .flag-btn {
-        min-width: 36px;
-        min-height: 36px;
+        min-width: 34px;
+        min-height: 34px;
       }
       .question-text {
-        font-size: 1rem;
-        line-height: 1.55;
-        margin-bottom: 14px;
+        font-size: 1.03rem;
+        line-height: 1.58;
+        margin-bottom: 16px;
         overflow-wrap: anywhere;
       }
-      .choice-group { gap: 8px; }
+      .choice-group { gap: 10px; }
       .choice-label {
         align-items: flex-start;
         gap: 10px;
-        min-height: 48px;
-        padding: 11px 12px;
-        font-size: 0.88rem;
-        line-height: 1.45;
+        min-height: 54px;
+        padding: 12px;
+        font-size: 0.95rem;
+        line-height: 1.48;
+        transform: none !important;
+      }
+      .choice-label:has(input[type="radio"]:checked) {
+        transform: none;
+        border-left-width: 2px;
       }
       .choice-label input[type="radio"] {
         margin-top: 4px;
@@ -1807,10 +2022,123 @@
       .question-card[data-type="True or False"] .choice-group,
       .enum-group { grid-template-columns: 1fr; }
     }
+    @media (max-width: 380px) {
+      #drawer .section-pills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #drawer .nav-section-cells { gap: 6px; }
+      #drawer .nav-cell { min-height: 44px; font-size: 0.82rem; }
+    }
     @media (max-width: 479px) {
-      #main-layout { padding: 12px 8px; }
-      .question-card { padding: 12px; }
+      #main-layout { padding: 8px 8px 16px; }
+      .question-card { padding: 15px 12px; }
       body { font-size: 0.95rem; }
+      #filter-toolbar { padding-inline: 8px; }
+    }
+    html.touch-desktop-site {
+      font-size: calc(16px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site body {
+      padding-bottom: calc(58px * var(--touch-desktop-ratio, 2.5) + env(safe-area-inset-bottom));
+    }
+    html.touch-desktop-site .top-bar-inner {
+      height: calc(48px * var(--touch-desktop-ratio, 2.5));
+      padding: 0 calc(10px * var(--touch-desktop-ratio, 2.5));
+      gap: calc(6px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site .timer-cluster { min-width: calc(44px * var(--touch-desktop-ratio, 2.5)); }
+    html.touch-desktop-site .timer-ring-wrap,
+    html.touch-desktop-site .timer-ring-svg {
+      width: calc(42px * var(--touch-desktop-ratio, 2.5));
+      height: calc(42px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #shortcut-help-btn,
+    html.touch-desktop-site #theme-toggle-btn {
+      min-width: calc(34px * var(--touch-desktop-ratio, 2.5));
+      width: calc(34px * var(--touch-desktop-ratio, 2.5));
+      min-height: calc(34px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #progress-bar-track {
+      height: calc(4px * var(--touch-desktop-ratio, 2.5));
+      top: calc(48px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #filter-toolbar {
+      top: calc(52px * var(--touch-desktop-ratio, 2.5));
+      min-height: calc(47px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(6px * var(--touch-desktop-ratio, 2.5)) calc(10px * var(--touch-desktop-ratio, 2.5));
+      gap: calc(6px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #filter-menu-btn,
+    html.touch-desktop-site #question-search-input {
+      min-height: calc(34px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #main-layout {
+      padding: calc(8px * var(--touch-desktop-ratio, 2.5)) calc(10px * var(--touch-desktop-ratio, 2.5)) calc(16px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #questions-container {
+      padding-bottom: calc(76px * var(--touch-desktop-ratio, 2.5) + env(safe-area-inset-bottom));
+    }
+    html.touch-desktop-site .section-header {
+      margin: calc(10px * var(--touch-desktop-ratio, 2.5)) 0;
+      padding: calc(10px * var(--touch-desktop-ratio, 2.5)) 0 calc(8px * var(--touch-desktop-ratio, 2.5)) calc(10px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site .question-card {
+      padding: calc(16px * var(--touch-desktop-ratio, 2.5)) calc(14px * var(--touch-desktop-ratio, 2.5));
+      margin-bottom: calc(12px * var(--touch-desktop-ratio, 2.5));
+      border-radius: calc(10px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site .choice-label {
+      min-height: calc(54px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(12px * var(--touch-desktop-ratio, 2.5));
+      gap: calc(10px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site .choice-letter {
+      flex-basis: calc(24px * var(--touch-desktop-ratio, 2.5));
+      min-width: calc(24px * var(--touch-desktop-ratio, 2.5));
+      height: calc(24px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #mobile-bottom-nav {
+      gap: calc(4px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(6px * var(--touch-desktop-ratio, 2.5)) calc(8px * var(--touch-desktop-ratio, 2.5)) calc(6px * var(--touch-desktop-ratio, 2.5) + env(safe-area-inset-bottom));
+    }
+    html.touch-desktop-site .mobile-bottom-btn {
+      min-height: calc(42px * var(--touch-desktop-ratio, 2.5));
+      border-radius: calc(7px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site .mobile-btn-icon {
+      width: calc(16px * var(--touch-desktop-ratio, 2.5));
+      height: calc(16px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #drawer {
+      top: calc(8px * var(--touch-desktop-ratio, 2.5));
+      right: calc(8px * var(--touch-desktop-ratio, 2.5));
+      left: calc(8px * var(--touch-desktop-ratio, 2.5));
+      bottom: calc(8px * var(--touch-desktop-ratio, 2.5) + env(safe-area-inset-bottom));
+      max-height: calc(100dvh - (16px * var(--touch-desktop-ratio, 2.5)) - env(safe-area-inset-bottom));
+      border-radius: calc(14px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(14px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #drawer-close-btn {
+      width: calc(40px * var(--touch-desktop-ratio, 2.5));
+      min-width: calc(40px * var(--touch-desktop-ratio, 2.5));
+      height: calc(40px * var(--touch-desktop-ratio, 2.5));
+      min-height: calc(40px * var(--touch-desktop-ratio, 2.5));
+      border-radius: calc(10px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #drawer .section-pills,
+    html.touch-desktop-site #drawer .nav-section-cells {
+      gap: calc(8px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #drawer .section-pill {
+      min-height: calc(34px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(6px * var(--touch-desktop-ratio, 2.5)) calc(8px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #jump-unanswered-btn-drawer,
+    html.touch-desktop-site #reset-flags-btn-drawer {
+      min-height: calc(38px * var(--touch-desktop-ratio, 2.5));
+      padding: calc(8px * var(--touch-desktop-ratio, 2.5)) calc(10px * var(--touch-desktop-ratio, 2.5));
+    }
+    html.touch-desktop-site #drawer .nav-cell {
+      min-height: calc(48px * var(--touch-desktop-ratio, 2.5));
+      border-radius: calc(10px * var(--touch-desktop-ratio, 2.5));
     }
 
     /* =====================================================
@@ -2120,7 +2448,7 @@
     }
     .back-to-top-summary:hover { border-color: var(--color-primary); color: var(--color-primary); }
     .back-to-top-summary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       .summary-stats { grid-template-columns: 1fr; }
       .summary-hero { grid-template-columns: 1fr; }
       .score-ring { width: 132px; }
@@ -2398,7 +2726,7 @@
     }
     .fresh-btn:hover { border-color: var(--color-danger); color: var(--color-danger); }
     .fresh-btn:focus-visible { outline: 2px solid var(--color-danger); outline-offset: 2px; }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       #resume-screen { padding: 24px; }
       .resume-header { grid-template-columns: 1fr; text-align: center; justify-items: center; }
       .resume-stat-grid { grid-template-columns: 1fr; }
@@ -2538,7 +2866,7 @@
         bottom: 24px;
       }
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       #floating-back-top { bottom: 86px; }
     }
 
@@ -2607,7 +2935,7 @@
       opacity: 1;
       transform: translateY(0) scale(1);
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       #toast-container { bottom: 86px; }
       .toast {
         max-width: calc(100vw - 24px);
@@ -2812,13 +3140,70 @@
       92% { opacity: 0.65; }
       100% { top: 110%; opacity: 0; }
     }
-    @media (max-width: 767px) {
+    @media (max-width: 767px), (pointer: coarse) {
       .gm-grain,
       .gm-scanline {
         opacity: 0.012;
       }
       .gm-pulse-edge.left { left: 12px; }
       .gm-pulse-edge.right { right: 12px; }
+    }
+    html.gm-static-mode #gm-canvas,
+    html.gm-static-mode .gm-grain,
+    html.gm-static-mode .gm-scanline,
+    html.gm-static-mode .gm-pulse-edge {
+      display: none !important;
+    }
+    html.gm-static-mode .gm-star {
+      animation: none !important;
+      box-shadow: none;
+      opacity: 0.22;
+    }
+    html.gm-static-mode .gm-aurora {
+      animation: none !important;
+      filter: none;
+      opacity: 0.24;
+      transform: none;
+      transition: none;
+    }
+    @media (max-width: 900px), (pointer: coarse) {
+      #gm-canvas,
+      .gm-grain,
+      .gm-scanline,
+      .gm-pulse-edge {
+        display: none !important;
+      }
+      .gm-star {
+        animation: none !important;
+        box-shadow: none;
+        opacity: 0.18;
+      }
+      .gm-aurora {
+        animation: none !important;
+        filter: none;
+        opacity: 0.22;
+        transform: none;
+        transition: none;
+      }
+      #filter-toolbar {
+        backdrop-filter: none;
+        box-shadow: none;
+      }
+      .question-card {
+        transition: background-color 0.12s ease, border-color 0.12s ease;
+        box-shadow: var(--shadow);
+        contain-intrinsic-size: 460px;
+      }
+      .question-card:hover {
+        box-shadow: var(--shadow);
+        transform: none;
+      }
+      .choice-label,
+      .filter-btn,
+      .nav-cell,
+      .mobile-bottom-btn {
+        transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      }
     }
   </style>
 </head>
@@ -2891,7 +3276,7 @@
       <label class="question-search" for="question-search-input">
         <span class="sr-only">Search questions</span>
         <input id="question-search-input" type="search" placeholder="Search questions..." autocomplete="off">
-        <button id="question-search-clear" type="button" aria-label="Clear question search">x</button>
+        <button id="question-search-clear" type="button" aria-label="Clear question search">×</button>
       </label>
       <button class="search-nav-btn" id="search-prev-btn" type="button" aria-label="Previous search match">Prev</button>
       <button class="search-nav-btn" id="search-next-btn" type="button" aria-label="Next search match">Next</button>
@@ -2975,7 +3360,7 @@
     <button class="mobile-bottom-btn" id="mobile-nav-search" type="button"><span class="mobile-btn-icon">⌕</span><span>Find</span></button>
     <button class="mobile-bottom-btn" id="mobile-nav-prev" type="button"><span class="mobile-btn-icon">←</span><span>Prev</span></button>
     <button class="mobile-bottom-btn" id="mobile-nav-next" type="button"><span class="mobile-btn-icon">→</span><span>Next</span></button>
-    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button"><span class="mobile-btn-icon">⊞</span><span>Nav</span></button>
+    <button class="mobile-bottom-btn" id="mobile-nav-drawer" type="button" aria-label="Open question navigator" aria-expanded="false"><span class="mobile-btn-icon">⊞</span><span>Nav</span></button>
     <button class="mobile-bottom-btn primary" id="mobile-nav-submit" type="button"><span class="mobile-btn-icon">✓</span><span>Submit</span></button>
   </nav>
 
@@ -2984,7 +3369,7 @@
 
   <!-- DRAWER -->
   <div id="drawer" role="dialog" aria-label="Question navigator drawer" aria-modal="true" tabindex="-1">
-    <button id="drawer-close-btn" aria-label="Close navigator">x</button>
+    <button id="drawer-close-btn" aria-label="Close navigator">×</button>
     <div class="drawer-nav-content">
       <div class="nav-header-label"><span>Question <span class="nav-header-accent">Navigator</span></span></div>
       <div class="section-pills" id="nav-pills-drawer"></div>
@@ -3062,8 +3447,34 @@
   </footer>
 
   <script>
+    function isPerformanceConstrained() {
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const compactViewport = window.matchMedia?.('(max-width: 900px)').matches || window.innerWidth <= 900;
+      const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches;
+      const lowCoreCount = (navigator.hardwareConcurrency || 8) <= 4;
+      const saveData = !!navigator.connection?.saveData;
+      return !!(reduced || compactViewport || coarsePointer || lowCoreCount || saveData);
+    }
+    function syncTouchDesktopSiteMode() {
+      const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches;
+      const physicalWidth = Math.min(
+        screen.width || window.innerWidth,
+        screen.height || window.innerHeight,
+        window.outerWidth || window.innerWidth
+      );
+      const ratio = physicalWidth > 0 ? window.innerWidth / physicalWidth : 1;
+      const enabled = !!(coarsePointer && window.innerWidth >= 768 && physicalWidth <= 620 && ratio > 1.35);
+      const clampedRatio = enabled ? Math.min(2.8, Math.max(1.6, ratio)) : 1;
+      document.documentElement.classList.toggle('touch-desktop-site', enabled);
+      document.documentElement.style.setProperty('--touch-desktop-ratio', clampedRatio.toFixed(3));
+    }
+    syncTouchDesktopSiteMode();
+    window.addEventListener('resize', syncTouchDesktopSiteMode, { passive: true });
+    window.visualViewport?.addEventListener('resize', syncTouchDesktopSiteMode, { passive: true });
+
     /* =====================================================
        GOD MODE BACKGROUND ENGINE
+
        Decorative only. Does not touch exam state or answers.
     ===================================================== */
     (function initGodModeBackground() {
@@ -3071,13 +3482,12 @@
       window.__gmBackgroundStarted = true;
 
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const isSmallScreen = () => window.innerWidth < 768;
-      const lowPower = () => (navigator.hardwareConcurrency || 8) <= 4 || isSmallScreen();
+      const lowPower = () => isPerformanceConstrained();
 
       function buildStars() {
         const container = document.getElementById('gm-stars');
         if (!container || container.childElementCount) return;
-        const count = lowPower() ? 70 : 170;
+        const count = lowPower() ? 36 : 120;
         const fragment = document.createDocumentFragment();
 
         for (let i = 0; i < count; i++) {
@@ -3131,33 +3541,36 @@
       }
 
       function initParallax() {
-        if (reducedMotion.matches) return;
+        if (reducedMotion.matches || lowPower()) return;
         const bg = document.getElementById('gm-background');
         if (!bg) return;
         let targetX = 0;
         let targetY = 0;
         let currentX = 0;
         let currentY = 0;
+        let parallaxFrame = 0;
 
         window.addEventListener('pointermove', event => {
           targetX = (event.clientX - window.innerWidth / 2) * 0.018;
           targetY = (event.clientY - window.innerHeight / 2) * 0.018;
+          if (!parallaxFrame) parallaxFrame = requestAnimationFrame(tick);
         }, { passive: true });
 
         function tick() {
+          parallaxFrame = 0;
           currentX += (targetX - currentX) * 0.055;
           currentY += (targetY - currentY) * 0.055;
           bg.style.setProperty('--gm-parallax-x', `${currentX.toFixed(2)}px`);
           bg.style.setProperty('--gm-parallax-y', `${currentY.toFixed(2)}px`);
-          requestAnimationFrame(tick);
+          if (Math.abs(targetX - currentX) > 0.08 || Math.abs(targetY - currentY) > 0.08) {
+            parallaxFrame = requestAnimationFrame(tick);
+          }
         }
-
-        requestAnimationFrame(tick);
       }
 
       function initCanvas() {
         const canvas = document.getElementById('gm-canvas');
-        if (!canvas || reducedMotion.matches) return;
+        if (!canvas || reducedMotion.matches || lowPower()) return;
         const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) return;
 
@@ -3175,6 +3588,7 @@
         let dpr = 1;
         let rafId = 0;
         let nextShot = 0;
+        let lastFrame = 0;
         let mouseX = -9999;
         let mouseY = -9999;
 
@@ -3224,6 +3638,8 @@
         function draw(now) {
           rafId = requestAnimationFrame(draw);
           if (document.hidden) return;
+          if (now - lastFrame < 33) return;
+          lastFrame = now;
           ctx.clearRect(0, 0, width, height);
 
           if (now > nextShot && !lowPower()) spawnShootingStar(now);
@@ -3322,10 +3738,14 @@
       }
 
       function boot() {
+        const staticMode = lowPower();
+        document.documentElement.classList.toggle('gm-static-mode', staticMode);
         buildStars();
-        buildPulseEdges();
-        initParallax();
-        initCanvas();
+        if (!staticMode) {
+          buildPulseEdges();
+          initParallax();
+          initCanvas();
+        }
       }
 
       if (document.readyState === 'loading') {
@@ -4509,10 +4929,10 @@
     let activeFilter   = 'all';
     let activeSearchTerm = '';
     let activeSearchIndex = 0;
-    let preparedQuestionBank = null;
-    let questionDiagnostics = [];
     let autoAdvanceEnabled = false;
     let autoAdvanceTimer = null;
+    let preparedQuestionBank = null;
+    let questionDiagnostics = [];
 
     const TYPE_ORDER = [
       "Multiple Choice",
@@ -5633,12 +6053,18 @@
         if (targetCard) markActiveQuestionCard(targetCard);
         root.style.scrollBehavior = previousScrollBehavior;
       };
-      if (Math.abs(distance) < 4 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (fastScrollTo._frame) {
+        cancelAnimationFrame(fastScrollTo._frame);
+        fastScrollTo._frame = null;
+      }
+      if (fastScrollTo._finish) {
+        clearTimeout(fastScrollTo._finish);
+        fastScrollTo._finish = null;
+      }
+      if (isPerformanceConstrained() || Math.abs(distance) < 4 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         finishScroll();
         return;
       }
-      if (fastScrollTo._frame) cancelAnimationFrame(fastScrollTo._frame);
-      if (fastScrollTo._finish) clearTimeout(fastScrollTo._finish);
       const start = performance.now();
       const easeOut = t => 1 - Math.pow(1 - t, 3);
       const tick = now => {
@@ -5695,11 +6121,31 @@
       markActiveQuestionCard(card);
       const targetTop = getComfortableCardTop(card);
       fastScrollTo(targetTop, duration, card);
+      if (isPerformanceConstrained()) return;
       card.classList.remove('jump-highlight');
       requestAnimationFrame(() => {
         card.classList.add('jump-highlight');
         setTimeout(() => card.classList.remove('jump-highlight'), 520);
       });
+    }
+
+    function jumpToCardInstant(card) {
+      if (!card) return;
+      if (fastScrollTo._frame) {
+        cancelAnimationFrame(fastScrollTo._frame);
+        fastScrollTo._frame = null;
+      }
+      if (fastScrollTo._finish) {
+        clearTimeout(fastScrollTo._finish);
+        fastScrollTo._finish = null;
+      }
+      markActiveQuestionCard(card);
+      const targetTop = Math.max(0, card.getBoundingClientRect().top + window.scrollY - getStickyScrollOffset() - 10);
+      const root = document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, targetTop);
+      root.style.scrollBehavior = previousScrollBehavior;
     }
 
     function queueScrollToCard(card) {
@@ -5880,16 +6326,20 @@
       const drawer = document.getElementById('drawer');
       drawerPreviouslyFocused = document.activeElement;
       drawer.classList.add('open');
+      document.body.classList.add('drawer-open');
       document.getElementById('drawer-backdrop').classList.add('open');
       document.getElementById('drawer-toggle').setAttribute('aria-expanded', 'true');
+      document.getElementById('mobile-nav-drawer')?.setAttribute('aria-expanded', 'true');
       drawer.addEventListener('keydown', handleDrawerKeydown);
       requestAnimationFrame(() => document.getElementById('drawer-close-btn').focus());
     }
     function closeDrawer() {
       const drawer = document.getElementById('drawer');
       drawer.classList.remove('open');
+      document.body.classList.remove('drawer-open');
       document.getElementById('drawer-backdrop').classList.remove('open');
       document.getElementById('drawer-toggle').setAttribute('aria-expanded', 'false');
+      document.getElementById('mobile-nav-drawer')?.setAttribute('aria-expanded', 'false');
       drawer.removeEventListener('keydown', handleDrawerKeydown);
       if (drawerPreviouslyFocused && typeof drawerPreviouslyFocused.focus === 'function') {
         drawerPreviouslyFocused.focus();
@@ -6168,10 +6618,12 @@
           radio.addEventListener('change', () => {
             handleAnswer(q.id, choice);
             scheduleAutoAdvance(q.id);
-            lbl.animate([
-              { transform: 'translateX(4px) scale(1.02)' },
-              { transform: 'translateX(4px) scale(1)' }
-            ], { duration: 180, easing: 'ease-out' });
+            if (!isPerformanceConstrained()) {
+              lbl.animate([
+                { transform: 'translateX(4px) scale(1.02)' },
+                { transform: 'translateX(4px) scale(1)' }
+              ], { duration: 180, easing: 'ease-out' });
+            }
           });
           const span = document.createElement('span');
           span.className = 'choice-text';
@@ -6213,10 +6665,12 @@
           radio.addEventListener('change', () => {
             handleAnswer(q.id, val);
             scheduleAutoAdvance(q.id);
-            lbl.animate([
-              { transform: 'translateX(4px) scale(1.02)' },
-              { transform: 'translateX(4px) scale(1)' }
-            ], { duration: 180, easing: 'ease-out' });
+            if (!isPerformanceConstrained()) {
+              lbl.animate([
+                { transform: 'translateX(4px) scale(1.02)' },
+                { transform: 'translateX(4px) scale(1)' }
+              ], { duration: 180, easing: 'ease-out' });
+            }
           });
           const span = document.createElement('span');
           span.className = 'choice-text';
@@ -6975,6 +7429,7 @@
     ===================================================== */
     function applyFilter(filter, options = {}) {
       activeFilter = filter;
+      const animateVisibleCards = !isPerformanceConstrained() && filter !== 'all' && !activeSearchTerm;
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.filter === filter ? 'true' : 'false');
       });
@@ -6991,11 +7446,13 @@
         card.style.display = show ? '' : 'none';
         if (show) {
           visibleCount++;
-          card.classList.remove('filter-pop');
-          requestAnimationFrame(() => {
-            card.classList.add('filter-pop');
-            setTimeout(() => card.classList.remove('filter-pop'), 180);
-          });
+          if (animateVisibleCards) {
+            card.classList.remove('filter-pop');
+            requestAnimationFrame(() => {
+              card.classList.add('filter-pop');
+              setTimeout(() => card.classList.remove('filter-pop'), 180);
+            });
+          }
         }
       });
       updateSearchUI(visibleCount);
@@ -7019,7 +7476,7 @@
       const active = visibleCards.find(card => card.classList.contains('is-active'));
       if (active) return active;
 
-      const viewportAnchor = 140;
+      const viewportAnchor = getStickyScrollOffset() + 34;
       let best = visibleCards[0] || null;
       let bestDistance = Infinity;
       visibleCards.forEach(card => {
@@ -7076,8 +7533,9 @@
       const active = getActiveQuestionCard();
       const currentIndex = Math.max(0, cards.indexOf(active));
       const nextIndex = Math.min(cards.length - 1, Math.max(0, currentIndex + direction));
-      markActiveQuestionCard(cards[nextIndex]);
-      smoothScrollToCard(cards[nextIndex], 165);
+      const nextCard = cards[nextIndex];
+      if (isPerformanceConstrained()) jumpToCardInstant(nextCard);
+      else smoothScrollToCard(nextCard, 165);
     }
 
     function focusQuestionSearch() {
@@ -7311,11 +7769,21 @@
       document.getElementById('floating-back-top').addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
-      window.addEventListener('scroll', () => {
+      let floatingBackTopTicking = false;
+      function syncFloatingBackTop() {
         const btn = document.getElementById('floating-back-top');
+        if (!btn) return;
         if (!examState.submitted && window.scrollY > 300) btn.style.display = 'flex';
         else if (!examState.submitted && window.scrollY <= 300) btn.style.display = 'none';
-      });
+      }
+      window.addEventListener('scroll', () => {
+        if (floatingBackTopTicking) return;
+        floatingBackTopTicking = true;
+        requestAnimationFrame(() => {
+          floatingBackTopTicking = false;
+          syncFloatingBackTop();
+        });
+      }, { passive: true });
 
       // Drawer
       document.getElementById('drawer-toggle').addEventListener('click', openDrawer);
